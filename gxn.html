@@ -382,8 +382,9 @@
       const warningLog = document.getElementById('qtvAuditLogContent');
       const btnReturnCtv = document.getElementById('btnReturnCtv');
 
+      // CHỈ HIỆN CẢNH BÁO VÀNG CHO HỒ SƠ GXN NẾU CÓ VẾT SỬA ĐỔI TỪ CTV (CLB KHÔNG HIỆN)
       const rawLog = item.ctvNote || item.rawLog || "";
-      if (rawLog !== "" && (rawLog.includes("LỊCH SỬ SỬA ĐỔI") || rawLog.includes("⚠️") || rawLog.includes("Sửa") || rawLog.includes("Nội dung"))) {
+      if (!isClb && rawLog !== "" && (rawLog.includes("LỊCH SỬ SỬA ĐỔI") || rawLog.includes("⚠️") || rawLog.includes("Sửa"))) {
         if (warningBox && warningLog) {
           warningBox.style.display = 'block';
           warningLog.textContent = rawLog;
@@ -396,7 +397,6 @@
         ctvGroup.style.display = 'none';
         qtvGroup.style.display = 'grid';
 
-        // Ẩn nút "Trả hồ sơ CTV" nếu là hồ sơ CLB do sinh viên nộp thẳng
         if (btnReturnCtv) {
           btnReturnCtv.style.display = isClb ? 'none' : 'block';
         }
