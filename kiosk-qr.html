@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BÀN TRỰC | QUÉT QR ĐIỂM DANH CTV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col items-center justify-center p-4 select-none">
+
+  <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full space-y-5">
+    <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-[11px] font-black uppercase tracking-wider">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      MÃ QR ĐỘNG BẢO MẬT
+    </div>
+
+    <div>
+      <h1 class="text-base font-black tracking-wide uppercase">ĐIỂM DANH CA TRỰC CTV</h1>
+      <p class="text-xs text-slate-400 mt-0.5">Văn phòng Đoàn Thanh niên - Hội Sinh viên</p>
+    </div>
+
+    <!-- KHUNG HIỂN THỊ MÃ QR -->
+    <div class="bg-white p-4 rounded-2xl flex items-center justify-center mx-auto w-[220px] h-[220px] shadow-inner">
+      <div id="qrcode-target"></div>
+    </div>
+
+    <!-- THANH TIẾN ĐỘ 10S -->
+    <div class="space-y-1.5">
+      <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+        <div id="bar-progress" class="bg-amber-400 h-full w-full transition-all duration-1000 ease-linear"></div>
+      </div>
+      <p class="text-xs text-slate-400">Mã tự làm mới sau: <b id="text-timer" class="text-amber-400 font-mono">10</b>s</p>
+    </div>
+
+    <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60 text-[11px] text-slate-400 space-y-1">
+      <p>⚠️ <b>Lưu ý chống gian lận:</b></p>
+      <p>Mã tự đổi mỗi 10s. Hệ thống tự ghi nhận IP mạng và thiết bị, tự động cảnh báo các tài khoản điểm danh hộ.</p>
+    </div>
+  </div>
+
+  <script src="./config.js"></script>
+  <script>
+    let qrGenerator = null;
+    let secondsLeft = 10;
+
+    async function loadDynamicQR() {
+      try {
+        const res = await fetch(`${API_URL}?action=GET_DYNAMIC_QR`);
+        const data = await res.json();
+        if (data.success) {
+          secondsLeft = data.expiresIn || 10;
+          renderQR(data.qrToken);
+        }
+      } catch (err) {
+        console.error("Lỗi đồng bộ QR:", err);
+      }
+    }
+
+    function renderQR(token) {
+      const box = document.getElementById("qrcode-target");
+      box.innerHTML = "";
+      qrGenerator = new QRCode(box, {
+        text: token,
+        width: 190,
+        height: 190,
+        colorDark: "#020617",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    setInterval(() => {
+      secondsLeft--;
+      document.getElementById("text-timer").innerText = secondsLeft;
+      document.getElementById("bar-progress").style.width = `${(secondsLeft / 10) * 100}%`;
+
+      if (secondsLeft <= 0) {
+        secondsLeft = 10;
+        loadDynamicQR();
+      }
+    }, 1000);
+
+    window.addEventListener("DOMContentLoaded", loadDynamicQR);
+  </script>
+</body>
+</html>
