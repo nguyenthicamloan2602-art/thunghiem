@@ -1277,6 +1277,9 @@
             let badgeTrangThai = "";
             if (s.trangThai === "HOP_LE") {
               badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 flex items-center justify-center gap-1"><i class="fa-solid fa-circle-check"></i> Hợp lệ</span>`;
+            } else if (s.trangThai === "TRUNG_THIET_BI") {
+              // Hiển thị huy hiệu màu vàng cảnh báo trùng thiết bị kèm nội dung ghi chú khi rê chuột vào
+              badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300 flex items-center justify-center gap-1" title="${s.ghiChu || 'Trùng thiết bị'}"><i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Trùng thiết bị</span>`;
             } else if (s.trangThai === "KHONG_HOP_LE") {
               badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 flex items-center justify-center gap-1" title="${s.ghiChu || ''}"><i class="fa-solid fa-triangle-exclamation"></i> Không hợp lệ</span>`;
             } else {
