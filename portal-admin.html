@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BÀN ĐIỀU HÀNH QUẢN TRỊ | ĐOÀN HỘI UMP</title>
+  <title>HỆ THỐNG QUẢN LÝ SỐ ĐOÀN - HỘI ĐH Y DƯỢC TPHCM</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -14,10 +14,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    body, button, input, select, textarea {
-      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif !important;
+    * {
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
       box-sizing: border-box;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     .fa, .fas, .far, .fa-solid, .fa-regular, .fa-brands, [class*="fa-"] {
       font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
@@ -27,606 +28,986 @@
       background-image: 
         radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
         radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.10) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, rgba(56, 189, 248, 0.08) 0px, transparent 50%);
+        radial-gradient(at 50% 100%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.06) 0px, transparent 50%);
+    }
+    .grid-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
+      mask-image: radial-gradient(ellipse 65% 50% at 50% 45%, #000 70%, transparent 100%);
     }
     .glass-card {
       background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 
+        0 20px 40px -15px rgba(15, 23, 42, 0.07),
+        0 0 0 1px rgba(226, 232, 240, 0.8),
+        0 1px 3px rgba(0, 0, 0, 0.03);
     }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
   </style>
 </head>
-<body class="bg-mesh min-h-screen flex text-slate-800 select-none">
+<body class="bg-mesh min-h-screen flex flex-col justify-between text-slate-800 relative selection:bg-sky-500 selection:text-white select-none">
+  <div class="fixed inset-0 grid-pattern pointer-events-none z-0"></div>
 
-  <!-- SIDEBAR DỌC ADMIN -->
-  <aside class="w-64 bg-white/95 border-r border-slate-200/90 flex flex-col justify-between p-4 sticky top-0 h-screen shadow-sm z-40 overflow-y-auto">
-    <div class="space-y-5">
-      <div class="px-2 pt-1">
-        <img alt="Logo Đoàn Hội UMP" class="h-12 w-auto object-contain drop-shadow-sm" src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/f/f7/Logo_Đại_học_Y_Dược_TP.HCM.png'">
+  <!-- HEADER -->
+  <header class="bg-white/90 backdrop-blur-xl border-b border-slate-200/90 shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <img alt="Logo UMP" class="h-10 sm:h-12 w-auto object-contain shrink-0 drop-shadow-sm cursor-pointer" src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/f/f7/Logo_Đại_học_Y_Dược_TP.HCM.png'">
+        <div class="h-7 w-[2px] bg-sky-500 rounded-full hidden sm:block"></div>
+        <div>
+          <h1 class="font-extrabold text-xs md:text-sm tracking-tight text-slate-800 uppercase">BÀN ĐIỀU HÀNH QUẢN TRỊ | ĐOÀN - HỘI UMP</h1>
+          <p class="text-[10.5px] text-sky-600 font-bold uppercase">HỆ THỐNG XÉT DUYỆT & QUẢN TRỊ HOẠT ĐỘNG TỔNG THỂ</p>
+        </div>
       </div>
 
-      <nav class="space-y-1 text-xs font-bold">
-        <button onclick="switchAdminTab('baocao')" id="tab-btn-bc" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-sky-500 text-white shadow-md transition">
-          <i class="fa-solid fa-chart-pie text-sm w-4"></i> Báo Cáo Tháng
-        </button>
-        <button onclick="switchAdminTab('csvc')" id="tab-btn-csvc" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-building text-sm w-4"></i> Duyệt CSVC
-        </button>
-        <button onclick="switchAdminTab('lich-diemdanh')" id="tab-btn-ldd" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-calendar-check text-sm w-4"></i> Lịch Trực CTV
-        </button>
-        <button onclick="switchAdminTab('du-lieu-import')" id="tab-btn-dli" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-file-import text-sm w-4"></i> Dữ Liệu Import (CTV)
-        </button>
-        <button onclick="switchAdminTab('bangiao')" id="tab-btn-bg" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-box-archive text-sm w-4"></i> Bàn Giao Vật Phẩm
-        </button>
-        <button onclick="switchAdminTab('xeploai')" id="tab-btn-xl" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-award text-sm w-4"></i> Xếp Loại CTV
-        </button>
-        <button onclick="switchAdminTab('hoatdong')" id="tab-btn-hd" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-bullhorn text-sm w-4"></i> Quản Lý Hoạt Động
+      <div class="flex items-center gap-2.5">
+        <div class="hidden sm:flex items-center gap-2 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-100">
+          <i class="fa-solid fa-user-shield text-xs text-sky-600"></i>
+          <span id="admin-display-name" class="text-xs font-bold text-slate-700">Vũ Nhật Tân (Ban Thường vụ)</span>
+        </div>
+        
+        <button onclick="toggleAdminPassModal(true)" class="px-3 py-1.5 bg-white hover:bg-sky-50 text-sky-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-sm">
+          <i class="fa-solid fa-key text-[11px]"></i> Đổi MK
         </button>
 
-        <!-- KHỐI TÍNH NĂNG MỞ RỘNG (ĐÃ KHÓA) -->
-        <div class="pt-3 pb-1 px-2 text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">
-          Tính năng mở rộng
+        <!-- NÚT CHUÔNG THÔNG BÁO CHO QUẢN TRỊ VIÊN -->
+        <div class="relative">
+          <button onclick="toggleSystemNotificationDropdown()" id="btn-noti-bell-shared" class="relative w-9 h-9 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 flex items-center justify-center transition shadow-xs">
+            <i class="fa-regular fa-bell text-sm"></i>
+            <span id="sys-noti-badge" class="hidden absolute -top-1 -right-1 px-1.5 py-0.2 bg-rose-500 text-white font-black text-[9.5px] rounded-full border-2 border-white animate-pulse">0</span>
+          </button>
+
+          <!-- MENU DROPDOWN CÓ BỘ LỌC THÔNG MINH -->
+          <div id="sys-noti-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-100 p-4 z-50 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+              <h4 class="font-black text-xs uppercase text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-bell text-amber-500"></i> Trung Tâm Thông Báo
+              </h4>
+              <button onclick="markAllSysNotisRead()" class="text-[11px] font-bold text-sky-600 hover:underline">
+                Đã đọc tất cả
+              </button>
+            </div>
+
+            <div class="flex gap-1.5 p-1 bg-slate-50 border border-slate-200/60 rounded-xl text-[11px] font-bold">
+              <button onclick="filterNotiByType('ALL')" id="btn-noti-filter-ALL" class="flex-1 py-1 rounded-lg bg-white text-sky-700 shadow-xs font-black">Tất cả</button>
+              <button onclick="filterNotiByType('UNREAD')" id="btn-noti-filter-UNREAD" class="flex-1 py-1 rounded-lg text-slate-500 hover:text-slate-800">Chưa đọc</button>
+              <button onclick="filterNotiByType('CSVC')" id="btn-noti-filter-CSVC" class="flex-1 py-1 rounded-lg text-slate-500 hover:text-slate-800">CSVC</button>
+            </div>
+
+            <div id="sys-noti-list" class="max-h-72 overflow-y-auto space-y-2 text-xs divide-y divide-slate-50 pr-1">
+              <p class="text-center py-4 text-slate-400">Đang đồng bộ thông báo...</p>
+            </div>
+          </div>
         </div>
 
-        <button disabled class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-slate-400 bg-slate-100/60 cursor-not-allowed opacity-60">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-folder-closed text-sm w-4"></i> Sổ Văn Bản Đi/Đến
-          </div>
-          <span class="text-[9px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">KHÓA</span>
+        <button onclick="logoutAdmin()" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-rose-100">
+          <i class="fa-solid fa-right-from-bracket text-[11px]"></i> Đăng xuất
         </button>
-
-        <button disabled class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-slate-400 bg-slate-100/60 cursor-not-allowed opacity-60">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-file-invoice-dollar text-sm w-4"></i> Quyết Toán & Dự Toán
-          </div>
-          <span class="text-[9px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">AI</span>
-        </button>
-
-        <button disabled class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-slate-400 bg-slate-100/60 cursor-not-allowed opacity-60">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-sitemap text-sm w-4"></i> Quản Lý Cơ Sở
-          </div>
-          <span class="text-[9px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">KHÓA</span>
-        </button>
-      </nav>
-    </div>
-
-    <!-- PROFILE VÀ CÔNG TẮC ĐĂNG KÝ -->
-    <div class="pt-4 border-t border-slate-200 space-y-2.5 mt-3">
-      <div class="p-2.5 bg-sky-50 border border-sky-100 rounded-xl space-y-1">
-        <div class="flex items-center justify-between text-[11px] font-bold">
-          <span>Đăng ký tự do:</span>
-          <span id="label-reg-toggle" class="text-emerald-600 font-black">BẬT</span>
-        </div>
-        <button onclick="toggleGlobalRegister()" id="btn-toggle-reg" class="w-full py-1 text-[10.5px] font-bold bg-white border border-slate-200 rounded-lg shadow-xs hover:bg-slate-50 transition">
-          Khóa đăng ký
-        </button>
-      </div>
-
-      <div class="px-2">
-        <p id="admin-name" class="text-xs font-bold text-slate-800 truncate">Quản trị viên</p>
-        <span class="text-[10px] text-sky-600 font-bold uppercase">BAN THƯỜNG VỤ</span>
-      </div>
-      <div class="grid grid-cols-2 gap-1.5 pt-1">
-        <button onclick="toggleChangePassModal(true)" class="py-1.5 bg-white border border-slate-200 text-sky-700 rounded-xl text-[11px] font-bold transition">Đổi MK</button>
-        <button onclick="logout()" class="py-1.5 bg-rose-50 text-rose-600 rounded-xl text-[11px] font-bold transition">Thoát</button>
       </div>
     </div>
-  </aside>
+  </header>
 
-  <!-- MAIN VIEW ADMIN -->
-  <main class="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto z-10">
+  <!-- NỘI DUNG CHÍNH (SIDEBAR + MAIN PANEL) -->
+  <main class="max-w-7xl mx-auto w-full p-4 md:p-6 flex-grow z-10">
+    <div class="flex flex-col lg:flex-row gap-6">
 
-    <!-- 1. BÁO CÁO THÁNG & MỞ/KHÓA THÁNG TRỰC QUAN -->
-    <div id="sec-baocao" class="space-y-5">
-      <div class="glass-card rounded-[28px] p-5 space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <div>
-            <h2 class="text-sm font-black uppercase text-purple-950 flex items-center gap-2">
-              <i class="fa-solid fa-calendar-check text-purple-600"></i> Quản Lý Mở / Khóa Đợt Nộp Báo Cáo
-            </h2>
-            <p class="text-xs text-slate-500">Chỉ các tháng bật màu xanh mới cho phép đơn vị gửi báo cáo.</p>
-          </div>
-          <button onclick="exportFullReportsExcel()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition">
-            <i class="fa-solid fa-file-excel"></i> Xuất Báo Cáo Excel Tổng Hợp
+      <!-- SIDEBAR TRÁI -->
+      <aside class="w-full lg:w-64 space-y-4 shrink-0">
+        <div class="glass-card rounded-[28px] p-3 space-y-1.5">
+          <!-- 1. Báo cáo tháng -->
+          <button onclick="switchAdminTab('tab-baocao')" id="nav-tab-baocao" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-file-shield text-purple-600 w-4 text-center"></i> Báo Cáo Tháng</span>
+            <span id="badge-nav-bc" class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded-full font-black">Mới</span>
+          </button>
+
+          <!-- 2. Duyệt CSVC (Active mặc định) -->
+          <button onclick="switchAdminTab('tab-csvc')" id="nav-tab-csvc" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-black text-xs flex items-center justify-between transition bg-sky-600 text-white shadow-md shadow-sky-600/20">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-building-circle-check w-4 text-center"></i> Duyệt CSVC</span>
+            <span id="badge-nav-csvc" class="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full">0</span>
+          </button>
+
+          <!-- 3. Lịch trực CTV -->
+          <button onclick="switchAdminTab('tab-lich-truc')" id="nav-tab-lich-truc" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-calendar-days text-amber-500 w-4 text-center"></i> Lịch Trực CTV</span>
+          </button>
+
+          <!-- 4. Dữ liệu Import (QTV) -->
+          <button onclick="switchAdminTab('tab-import-data')" id="nav-tab-import-data" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-file-import text-indigo-600 w-4 text-center"></i> Dữ Liệu Import (QTV)</span>
+          </button>
+
+          <!-- 5. Bàn giao Vật Phẩm -->
+          <button onclick="switchAdminTab('tab-vat-pham')" id="nav-tab-vat-pham" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-boxes-stacked text-emerald-600 w-4 text-center"></i> Bàn Giao Vật Phẩm</span>
+          </button>
+
+          <!-- 6. Xếp loại CTV -->
+          <button onclick="switchAdminTab('tab-xep-loai')" id="nav-tab-xep-loai" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-award text-rose-500 w-4 text-center"></i> Xếp Loại CTV</span>
+          </button>
+
+          <!-- 7. Quản lý hoạt động -->
+          <button onclick="switchAdminTab('tab-hoat-dong')" id="nav-tab-hoat-dong" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-bullhorn text-sky-500 w-4 text-center"></i> Quản Lý Hoạt Động</span>
           </button>
         </div>
 
-        <div id="months-toggle-grid" class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-2 pt-2">
-          <p class="text-xs text-slate-400 col-span-12 py-2">Đang nạp danh sách tháng...</p>
-        </div>
-      </div>
-
-      <!-- BẢNG DANH SÁCH BÁO CÁO -->
-      <div class="glass-card rounded-[28px] p-5 space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-slate-700">Lọc tháng:</span>
-            <input type="month" id="filter-bc-month" class="p-2 border border-slate-200 rounded-xl text-xs font-bold outline-none bg-slate-50" onchange="loadReportsAdmin()">
-            <select id="filter-bc-status" onchange="filterReportsByStatus()" class="p-2 border border-slate-200 rounded-xl text-xs font-bold outline-none bg-slate-50">
-              <option value="ALL">Tất cả tiến độ</option>
-              <option value="DUNG_HAN">Đúng hạn</option>
-              <option value="NOP_TRE_HAN">Nộp trễ hạn</option>
-            </select>
-          </div>
-          <span id="badge-bc-stats" class="font-bold text-slate-500">Đang nạp...</span>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border-collapse">
-            <thead class="bg-slate-50 font-extrabold border-b">
-              <tr>
-                <th class="p-3">Đơn vị / Chi hội</th>
-                <th class="p-3 text-center">Kỳ báo cáo</th>
-                <th class="p-3 text-center">Thời gian nộp</th>
-                <th class="p-3 text-center">Tiến độ hạn</th>
-                <th class="p-3">Khó khăn / Đề xuất kiến nghị</th>
-                <th class="p-3 text-center">File Word</th>
-                <th class="p-3 text-center">Minh chứng</th>
-              </tr>
-            </thead>
-            <tbody id="bc-admin-body" class="divide-y divide-slate-100">
-              <tr><td colspan="7" class="text-center py-6 text-slate-400">Đang đồng bộ...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. DUYỆT CSVC -->
-    <div id="sec-csvc" class="hidden space-y-4">
-      <div class="flex flex-wrap justify-between items-center glass-card p-4 rounded-2xl gap-3">
-        <div>
-          <h1 class="text-base font-black text-slate-800 uppercase">🏢 Phê Duyệt Cơ Sở Vật Chất</h1>
-          <p class="text-xs text-slate-400">💡 <b>Click vào bất kỳ dòng đơn nào</b> để xem chi tiết và copy toàn bộ nội dung làm công văn.</p>
-        </div>
-        <button onclick="loadCsvcAdmin()" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700">Làm mới</button>
-      </div>
-
-      <div class="glass-card rounded-[28px] p-5 overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead class="bg-slate-50 font-extrabold border-b">
-            <tr>
-              <th class="p-3">Mã đơn</th>
-              <th class="p-3">Địa điểm / Xe</th>
-              <th class="p-3">Người phụ trách</th>
-              <th class="p-3">Thời gian</th>
-              <th class="p-3">Nội dung sử dụng</th>
-              <th class="p-3 text-center">Trạng thái</th>
-              <th class="p-3 text-center">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="csvc-admin-body" class="divide-y divide-slate-100">
-            <tr><td colspan="7" class="text-center py-6 text-slate-400">Đang tải...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 3. LỊCH TRỰC CTV -->
-    <div id="sec-lich-diemdanh" class="hidden space-y-5">
-      <div class="glass-card p-6 rounded-[28px] space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-3">
-          <div>
-            <h2 class="text-sm font-black uppercase text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-calendar-day text-sky-600"></i> Tra Cứu Lịch Trực CTV Theo Ngày
-            </h2>
-            <p class="text-xs text-slate-400">Chọn ngày bất kỳ để xem danh sách các bạn CTV đăng ký trực trong ngày đó.</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <input type="date" id="admin-shift-picker" class="p-2 border border-slate-200 rounded-xl text-xs font-bold outline-none bg-slate-50" onchange="loadAdminShiftsList()">
-            <button onclick="loadAdminShiftsList()" class="px-3.5 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-bold transition">Xem danh sách</button>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border-collapse">
-            <thead class="bg-sky-50/60 font-black border-b border-sky-100 text-sky-950">
-              <tr>
-                <th class="p-3">Họ Tên CTV</th>
-                <th class="p-3">Lớp &amp; MSSV</th>
-                <th class="p-3">Khung giờ đăng ký</th>
-                <th class="p-3 text-center">Quét vào / Quét ra</th>
-                <th class="p-3 text-center">Số ca quy đổi</th>
-                <th class="p-3 text-center">Trạng thái ca</th>
-              </tr>
-            </thead>
-            <tbody id="shifts-by-date-table-body" class="divide-y divide-slate-100">
-              <tr><td colspan="6" class="text-center py-6 text-slate-400">Chọn ngày để xem danh sách trực...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ĐIỂM DANH HÔM NAY -->
-      <div class="glass-card p-5 rounded-[28px] space-y-3">
-        <h2 class="text-xs font-black text-slate-800 uppercase"><i class="fa-solid fa-user-check text-emerald-600 mr-1"></i> CTV Đã Điểm Danh Hôm Nay</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 font-bold border-b">
-              <tr>
-                <th class="p-2.5">Họ Tên</th>
-                <th class="p-2.5">Giờ ĐK</th>
-                <th class="p-2.5 text-center">Vào ca</th>
-                <th class="p-2.5 text-center">Ra ca</th>
-                <th class="p-2.5 text-center">Số ca quy đổi</th>
-                <th class="p-2.5 text-center">Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody id="today-att-body" class="divide-y divide-slate-100">
-              <tr><td colspan="6" class="text-center py-4 text-slate-400">Đang nạp...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. QUẢN LÝ DỮ LIỆU IMPORT (TỪ CTV) -->
-    <div id="sec-du-lieu-import" class="hidden space-y-4">
-      <div class="flex justify-between items-center">
-        <div>
-          <h1 class="text-base font-black text-slate-800 uppercase">📥 Dữ Liệu Điểm Danh CTV Đã Gửi Về</h1>
-          <p class="text-xs text-slate-400 mt-0.5">Tiếp nhận và tải về file Excel danh sách sinh viên tham gia chương trình do các bạn CTV import.</p>
-        </div>
-        <button onclick="loadImportedDataLogs()" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700">Làm mới</button>
-      </div>
-
-      <div class="glass-card rounded-[28px] p-5 overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead class="bg-slate-50 font-extrabold border-b">
-            <tr>
-              <th class="p-3">Mã đợt</th>
-              <th class="p-3">Thời gian gửi</th>
-              <th class="p-3">Người gửi (CTV)</th>
-              <th class="p-3">Tên chương trình / Hoạt động</th>
-              <th class="p-3 text-center">Mã tiêu chí</th>
-              <th class="p-3 text-center">Số lượng SV</th>
-              <th class="p-3 text-center">Tệp danh sách</th>
-            </tr>
-          </thead>
-          <tbody id="import-logs-body" class="divide-y divide-slate-100">
-            <tr><td colspan="7" class="text-center py-6 text-slate-400">Đang nạp dữ liệu import...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 5. BÀN GIAO VẬT PHẨM -->
-    <div id="sec-bangiao" class="hidden space-y-4">
-      <div class="flex justify-between items-center">
-        <h1 class="text-base font-black text-slate-800 uppercase">📦 Quản Lý Mượn &amp; Bàn Giao Vật Phẩm</h1>
-        <button onclick="loadVatPhamOrdersAdmin()" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700">Làm mới</button>
-      </div>
-      <div class="glass-card rounded-[28px] p-5 overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead class="bg-slate-50 font-extrabold border-b">
-            <tr>
-              <th class="p-3">Mã đơn</th>
-              <th class="p-3">Đơn vị / Người mượn</th>
-              <th class="p-3">Danh sách đồ</th>
-              <th class="p-3">Thời gian</th>
-              <th class="p-3 text-center">Trạng thái</th>
-              <th class="p-3 text-center">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="vp-admin-body" class="divide-y divide-slate-100">
-            <tr><td colspan="6" class="text-center py-6 text-slate-400">Đang đồng bộ...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 6. XẾP LOẠI CTV -->
-    <div id="sec-xeploai" class="hidden space-y-4">
-      <div class="flex justify-between items-center">
-        <h1 class="text-base font-black text-slate-800 uppercase">🏆 Đánh Giá &amp; Xếp Loại CTV Cuối Kỳ</h1>
-        <button onclick="loadEvaluationTable()" class="px-3.5 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-bold shadow-xs">Làm mới</button>
-      </div>
-      <div class="glass-card rounded-[28px] p-5 overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead class="bg-slate-50 font-extrabold border-b">
-            <tr>
-              <th class="p-3">Họ Tên CTV &amp; Lớp</th>
-              <th class="p-3 text-center">Giờ &amp; Ca quy đổi</th>
-              <th class="p-3 text-rose-700">Hoạt động Bắt buộc</th>
-              <th class="p-3 text-sky-700">Hoạt động Tự chọn</th>
-              <th class="p-3 text-center">Xếp loại</th>
-              <th class="p-3 text-center">Lưu</th>
-            </tr>
-          </thead>
-          <tbody id="eval-table-body" class="divide-y divide-slate-100">
-            <tr><td colspan="6" class="text-center py-6 text-slate-400">Đang nạp dữ liệu...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 7. QUẢN LÝ HOẠT ĐỘNG -->
-    <div id="sec-hoatdong" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <div class="lg:col-span-5 glass-card p-6 rounded-[28px] space-y-3">
-        <h2 class="text-xs font-black uppercase text-slate-800">Đăng Hoạt Động Mới</h2>
-        <form onsubmit="submitNewActivity(event)" class="space-y-3 text-xs">
-          <div>
-            <label class="block font-bold text-slate-600 mb-1">Tên hoạt động *</label>
-            <input type="text" id="act_name" required class="w-full p-2.5 border rounded-xl outline-none font-bold bg-slate-50">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-600 mb-1">Tiêu chí đánh giá *</label>
-            <input type="text" id="act_type" placeholder="VD: 1.1, 2.3, 4.1 hoặc Tự chọn..." required class="w-full p-2.5 border rounded-xl outline-none bg-slate-50 font-bold">
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block font-bold text-slate-600 mb-1">Thời gian *</label>
-              <input type="text" id="act_time" placeholder="VD: 07:00 ngày 20/10/2026" required class="w-full p-2 border rounded-xl outline-none bg-slate-50">
+        <!-- TÍNH NĂNG MỞ RỘNG (KHÓA) -->
+        <div class="glass-card rounded-[28px] p-3.5 space-y-2 opacity-70">
+          <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider block px-1">TÍNH NĂNG MỞ RỘNG</span>
+          <div class="space-y-1 text-xs text-slate-500 font-bold">
+            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/60 border border-slate-100">
+              <span><i class="fa-solid fa-folder-tree text-slate-400 mr-2"></i> Sổ Văn Bản Đi/Đến</span>
+              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">KHÓA</span>
             </div>
-            <div>
-              <label class="block font-bold text-slate-600 mb-1">Địa điểm *</label>
-              <input type="text" id="act_loc" placeholder="GĐ 3D..." required class="w-full p-2 border rounded-xl outline-none bg-slate-50">
+            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/60 border border-slate-100">
+              <span><i class="fa-solid fa-file-invoice-dollar text-slate-400 mr-2"></i> Quyết Toán & Dự Toán</span>
+              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">AI</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/60 border border-slate-100">
+              <span><i class="fa-solid fa-users-gear text-slate-400 mr-2"></i> Quản Lý Cơ Sở</span>
+              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">KHÓA</span>
             </div>
           </div>
-          <div>
-            <label class="block font-bold text-slate-600 mb-1">Vị trí tuyển *</label>
-            <input type="text" id="act_positions" placeholder="Hậu cần, MC..." required class="w-full p-2 border rounded-xl outline-none bg-slate-50">
+        </div>
+
+        <!-- THANH TRẠNG THÁI GÓC DƯỚI BẢN GỐC -->
+        <div class="glass-card rounded-[28px] p-3.5 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-600">Đăng ký tự do:</span>
+            <button onclick="toggleDangKyTuDo()" id="btn-toggle-dktudo" class="px-2.5 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-black transition">
+              BẬT
+            </button>
           </div>
-          <button type="submit" class="w-full py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow-xs transition">Đăng Hoạt Động</button>
-        </form>
-      </div>
-      <div class="lg:col-span-7 glass-card p-6 rounded-[28px] space-y-3">
-        <h2 class="text-xs font-black uppercase text-slate-800">Danh Sách Hoạt Động</h2>
-        <div id="admin-act-list" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
+          <p class="text-[10px] text-slate-400 leading-tight">Khóa/mở chức năng CTV đăng ký ca trực tự do.</p>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <div>
+              <b class="text-xs text-slate-800 block" id="user-footer-name">Vũ Nhật Tân</b>
+              <span class="text-[10px] text-slate-400 block font-semibold">BAN THƯỜNG VỤ</span>
+            </div>
+            <button onclick="openModalProfile()" class="text-[11px] text-sky-600 font-bold hover:underline">
+              Cập nhật
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- KHU VỰC HIỂN THỊ NỘI DUNG CHÍNH (RIGHT CONTAINER) -->
+      <div class="flex-grow space-y-6 overflow-hidden">
+
+        <!-- ======================================================== -->
+        <!-- TAB 1: PHÊ DUYỆT CƠ SỞ VẬT CHẤT & XUẤT CÔNG VĂN TỔNG HỢP -->
+        <!-- ======================================================== -->
+        <section id="tab-csvc" class="space-y-4">
+          <div class="glass-card rounded-[28px] p-5 space-y-3">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-3">
+              <div>
+                <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
+                  <i class="fa-solid fa-building text-sky-600"></i> Phê Duyệt Cơ Sở Vật Chất
+                </h2>
+                <p class="text-[11px] text-slate-400 mt-0.5">Click vào dòng đơn để xem chi tiết hoặc tick nhiều dòng để xuất công văn tổng hợp</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="xuatCongVanTongHopMulti()" class="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition">
+                  <i class="fa-solid fa-file-word"></i> Xuất Công Văn Word Tổng Hợp (<span id="count-selected-csvc">0</span>)
+                </button>
+                <button onclick="loadCsvcDataAdmin()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+                  Làm mới
+                </button>
+              </div>
+            </div>
+
+            <!-- BẢNG DANH SÁCH CSVC -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden min-w-[760px]">
+                <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 whitespace-nowrap">
+                  <tr>
+                    <th class="p-3 w-10 text-center"><input type="checkbox" id="chk-master-csvc" onchange="toggleSelectAllCsvc(this)" class="w-4 h-4 rounded text-sky-600"></th>
+                    <th class="p-3 min-w-[140px]">Địa điểm / Xe</th>
+                    <th class="p-3 min-w-[150px]">Người phụ trách & Đơn vị</th>
+                    <th class="p-3 min-w-[130px]">Thời gian sử dụng</th>
+                    <th class="p-3 min-w-[150px]">Nội dung sử dụng</th>
+                    <th class="p-3 text-center min-w-[120px]">Trạng thái</th>
+                    <th class="p-3 text-center min-w-[160px]">Trao đổi & Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-csvc-admin" class="divide-y divide-slate-100 bg-white">
+                  <tr><td colspan="7" class="text-center py-6 text-slate-400">Đang nạp danh sách CSVC...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 2: BÁO CÁO THÁNG (MỞ KHÓA THÁNG TÙY Ý & AI TỔNG HỢP) -->
+        <!-- ======================================================== -->
+        <section id="tab-baocao" class="hidden space-y-4">
+          <div class="glass-card rounded-[28px] p-5 space-y-3">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-purple-100 pb-3">
+              <div>
+                <h2 class="font-extrabold text-sm text-purple-950 uppercase flex items-center gap-2">
+                  <i class="fa-solid fa-calendar-check text-purple-600"></i> Quản Lý Mở / Khóa Đợt Nộp Báo Cáo
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">Nhập kỳ tháng bất kỳ để mở hoặc khóa đợt nộp báo cáo cho cơ sở:</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="openModalAiBaoCao()" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> AI Tổng Hợp Báo Cáo Mẫu Word
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 bg-purple-50/60 p-3 rounded-2xl border border-purple-100">
+              <span class="text-xs font-bold text-purple-950">Mở/khóa kỳ tháng mới:</span>
+              <input type="month" id="admin_new_month_input" value="2026-11" class="p-1.5 border border-purple-200 rounded-xl text-xs font-bold bg-white outline-none">
+              <button onclick="themVaDoiTrangThaiThang(true)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition">
+                <i class="fa-solid fa-lock-open mr-1"></i> MỞ THÁNG NÀY
+              </button>
+              <button onclick="themVaDoiTrangThaiThang(false)" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition">
+                <i class="fa-solid fa-lock mr-1"></i> KHÓA LẠI
+              </button>
+            </div>
+
+            <div id="container-months-admin" class="flex flex-wrap gap-2 pt-2">
+              <span class="text-xs text-slate-400">Đang nạp trạng thái các kỳ tháng...</span>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-[28px] p-5 space-y-3">
+            <h3 class="font-black text-xs text-purple-900 uppercase">Danh Sách Báo Cáo Đơn Vị Gửi Về</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-purple-100 rounded-xl overflow-hidden min-w-[700px]">
+                <thead class="bg-purple-50 text-purple-950 font-bold border-b border-purple-100 whitespace-nowrap">
+                  <tr>
+                    <th class="p-3">Mã BC</th>
+                    <th class="p-3">Thời gian nộp</th>
+                    <th class="p-3">Kỳ báo cáo</th>
+                    <th class="p-3">Tên Đơn Vị</th>
+                    <th class="p-3 text-center">Tiến độ nộp</th>
+                    <th class="p-3 text-center">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-baocao-admin" class="divide-y divide-purple-50 bg-white">
+                  <tr><td colspan="6" class="text-center py-6 text-slate-400">Đang tải danh sách báo cáo...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 3: LỊCH TRỰC CTV (CHỌN NGÀY & ĐIỂM DANH THEO NGÀY) -->
+        <!-- ======================================================== -->
+        <section id="tab-lich-truc" class="hidden space-y-4">
+          <div class="glass-card rounded-[28px] p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-3">
+              <div>
+                <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
+                  <i class="fa-solid fa-calendar-days text-amber-500"></i> Lịch Trực & Điểm Danh Ca Trực CTV
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Chọn ngày bất kỳ để xem danh sách CTV đăng ký ca trực và trạng thái điểm danh vào/ra ca</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <label class="text-xs font-bold text-slate-600">Chọn ngày xem:</label>
+                <input type="date" id="admin_select_shift_date" onchange="loadLichTrucTheoNgayAdmin()" class="p-1.5 border border-amber-200 rounded-xl text-xs font-bold bg-white outline-none">
+                <button onclick="loadLichTrucTheoNgayAdmin()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition">
+                  Xem Lịch
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
+                <thead class="bg-amber-50/70 text-amber-950 font-bold border-b border-amber-200">
+                  <tr>
+                    <th class="p-3 w-12 text-center">STT</th>
+                    <th class="p-3">Họ và Tên CTV</th>
+                    <th class="p-3">Lớp</th>
+                    <th class="p-3 text-center">Khung Giờ Trực</th>
+                    <th class="p-3 text-center">Giờ Vào (Check-In)</th>
+                    <th class="p-3 text-center">Giờ Ra (Check-Out)</th>
+                    <th class="p-3 text-center">Trạng Thái Điểm Danh</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-lich-truc-admin" class="divide-y divide-slate-100 bg-white">
+                  <tr><td colspan="7" class="text-center py-6 text-slate-400">Vui lòng chọn ngày để tra cứu ca trực.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 4: IMPORT DỮ LIỆU ĐỘNG THEO TAB VÀ 2 CỘT CHUẨN      -->
+        <!-- ======================================================== -->
+        <section id="tab-import-data" class="hidden space-y-6">
+          <!-- BẢNG DANH SÁCH FILE CTV GỬI VỀ ĐỂ QTV TẢI VỀ KIỂM TRA -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+              <div>
+                <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
+                  <i class="fa-solid fa-inbox text-sky-600"></i> Danh Sách File Dữ Liệu CTV Gửi Về
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Tải file danh sách do CTV đính kèm về kiểm tra trước khi import vào hệ thống</p>
+              </div>
+              <button onclick="loadCtvSubmittedFilesAdmin()" class="px-3.5 py-1.5 bg-sky-50 text-sky-700 hover:bg-sky-100 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
+                <i class="fa-solid fa-arrows-rotate"></i> Làm mới
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-slate-200 rounded-2xl overflow-hidden min-w-[700px]">
+                <thead class="bg-slate-50 font-bold text-slate-700 border-b border-slate-200">
+                  <tr>
+                    <th class="p-3">Thời gian</th>
+                    <th class="p-3">CTV gửi</th>
+                    <th class="p-3">Chương trình / Hoạt động</th>
+                    <th class="p-3 text-center">Mục ĐRL</th>
+                    <th class="p-3 text-center">Trạng thái</th>
+                    <th class="p-3 text-center">Thao tác tải về</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-ctv-files-admin" class="divide-y divide-slate-100 bg-white">
+                  <tr><td colspan="6" class="text-center py-5 text-slate-400">Đang tải danh sách file...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5">
+            <div>
+              <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-file-import text-sky-600"></i> IMPORT DỮ LIỆU HOẠT ĐỘNG & MINH CHỨNG
+              </h3>
+              <p class="text-xs text-slate-400 mt-1">File Excel chỉ cần 2 cột <b>MSSV</b> và <b>Vai trò</b> (hoặc Chức vụ). STT và Số công nhận tự động tăng.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- 1. CHỌN FILE ĐÍCH -->
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">1. Chọn File Google Sheets Đích:</label>
+                <select id="sel-target-file" onchange="onSelectTargetFile()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 bg-slate-50 focus:bg-white focus:border-sky-500 outline-none transition">
+                  <option value="">-- Chọn 1 trong 3 file hệ thống --</option>
+                  <option value="FILE_GIAY_CHUNG_NHAN">1. File Giấy Chứng Nhận (Giay_chung_nhan)</option>
+                  <option value="FILE_GIAY_XAC_NHAN">2. File Hoạt Động Đoàn - Hội (Giay_xac_nhan)</option>
+                  <option value="FILE_CLB">3. File CLB / Đội / Nhóm (Bieumaukhac2528)</option>
+                </select>
+              </div>
+
+              <!-- 2. CHỌN TAB SHEET -->
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">2. Chọn Tab (Trang tính) Ghi Dữ Liệu:</label>
+                <select id="sel-target-tab" onchange="capNhatTruongThongTinChung()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 bg-slate-50 focus:bg-white focus:border-sky-500 outline-none transition">
+                  <option value="">-- Vui lòng chọn file ở bước 1 trước --</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 3. THÔNG TIN CHUNG CỐ ĐỊNH -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+              <div class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-info text-amber-500"></i> 3. Thông tin chung điền cố định</span>
+                <span class="text-[11px] text-sky-600 font-bold" id="label-loai-form">Chờ chọn file...</span>
+              </div>
+              
+              <div id="group-hoatdong-fields" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Tên chương trình / Hoạt động *</label>
+                  <input type="text" id="com_ten_ct" placeholder="VD: Hỗ trợ hậu cần khám phát thuốc Vũng Tàu" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Thời gian tổ chức / Ngày tham gia *</label>
+                  <input type="text" id="com_thoi_gian" placeholder="VD: 26,27/10/2025 hoặc 15/05/2026" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Mục ĐRL *</label>
+                  <input type="text" id="com_muc_drl" value="3.1" oninput="this.value = this.value.replace(',', '.')" placeholder="VD: 3.1 hoặc 4.1" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+              </div>
+
+              <div id="group-gcn-extra" class="grid grid-cols-1 md:grid-cols-3 gap-3 hidden pt-2 border-t border-slate-200">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Năm (Dương lịch)</label>
+                  <input type="number" id="com_nam" value="2026" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Năm học</label>
+                  <input type="text" id="com_nam_hoc_gcn" value="2025 - 2026" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Đơn vị tổ chức</label>
+                  <input type="text" id="com_don_vi_to_chuc" value="Đoàn Thanh niên - Hội Sinh viên Đại học Y Dược TPHCM" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+              </div>
+
+              <div id="group-clb-extra" class="grid grid-cols-1 md:grid-cols-3 gap-3 hidden">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Tên đơn vị (CLB / Đội / Nhóm) *</label>
+                  <input type="text" id="com_ten_don_vi" placeholder="VD: Câu lạc bộ Bé khỏe Bé ngoan" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Học kì *</label>
+                  <input type="text" id="com_hoc_ki" value="1" placeholder="VD: 1 hoặc 2" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Năm học *</label>
+                  <input type="text" id="com_nam_hoc_clb" value="2025 - 2026" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold bg-white outline-none">
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. TẢI FILE EXCEL 2 CỘT -->
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">4. Chọn File Excel / CSV (Chỉ cần 2 cột: MSSV và Vai trò/Chức vụ):</label>
+              <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-sky-500 transition cursor-pointer bg-slate-50/50" onclick="document.getElementById('input-file-excel-smart').click()">
+                <i class="fa-solid fa-file-excel text-3xl text-emerald-600 mb-2"></i>
+                <p class="text-xs font-bold text-slate-700" id="smart-file-name">Bấm để tải lên file .xlsx hoặc .csv</p>
+                <p class="text-[11px] text-slate-400 mt-1">Định dạng chuẩn: Cột 1 = MSSV | Cột 2 = Vai trò (hoặc Chức vụ)</p>
+              </div>
+              <input type="file" id="input-file-excel-smart" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleSmartExcelUpload(event)">
+            </div>
+
+            <button onclick="xacNhanImportSmart()" class="w-full py-3 bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-xl text-xs font-black shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up text-sm"></i> XÁC NHẬN GHI VÀO TAB ĐÃ CHỌN
+            </button>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 5: BÀN GIAO VẬT PHẨM & CHỤP ẢNH HIỆN TRẠNG TỪ CAMERA -->
+        <!-- ======================================================== -->
+        <section id="tab-vat-pham" class="hidden space-y-4">
+          <div class="glass-card rounded-[28px] p-5 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+              <div>
+                <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
+                  <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Bàn Giao & Thu Hồi Vật Phẩm
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Bổ sung hiển thị Lớp của sinh viên và hỗ trợ chụp ảnh trực tiếp từ Camera</p>
+              </div>
+              <button onclick="loadDonVatPhamAdmin()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold transition">
+                <i class="fa-solid fa-arrows-rotate"></i> Làm mới
+              </button>
+            </div>
+
+            <!-- BẢNG DANH SÁCH VẬT PHẨM -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden min-w-[700px]">
+                <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 whitespace-nowrap">
+                  <tr>
+                    <th class="p-3 min-w-[150px]">Chương trình</th>
+                    <th class="p-3 min-w-[150px]">Người mượn & Lớp</th>
+                    <th class="p-3 min-w-[130px]">Thời gian mượn - trả</th>
+                    <th class="p-3 min-w-[160px]">Danh mục đồ</th>
+                    <th class="p-3 text-center min-w-[110px]">Ảnh hiện trạng</th>
+                    <th class="p-3 text-center min-w-[120px]">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-vatpham-admin" class="divide-y divide-slate-100 bg-white">
+                  <tr><td colspan="6" class="text-center py-6 text-slate-400">Đang tải phiếu mượn vật phẩm...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 6: XẾP LOẠI CTV THEO BAN & XUẤT EXCEL -->
+        <!-- ======================================================== -->
+        <section id="tab-xep-loai" class="hidden space-y-4">
+          <div class="glass-card rounded-[28px] p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-3">
+              <div>
+                <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
+                  <i class="fa-solid fa-award text-rose-500"></i> Đánh Giá, Xếp Loại & Quản Lý Hồ Sơ CTV
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Dữ liệu đọc trực tiếp từ sheet HoSo_CTV. Nhấn vào dòng để xem chi tiết hoạt động của CTV.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="xuatExcelXepLoaiCTV()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md transition">
+                  <i class="fa-solid fa-file-excel"></i> Xuất Excel Hoàn Thành Nhiệm Vụ
+                </button>
+                <button onclick="loadDanhSachCTVAdmin()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Bộ lọc theo Ban chuyên môn -->
+            <div class="flex items-center gap-3 bg-rose-50/50 p-3 rounded-2xl border border-rose-100">
+              <span class="text-xs font-bold text-rose-950">Lọc theo Ban chuyên môn:</span>
+              <select id="filter-ban-ctv" onchange="locDanhSachCTVTheoBan()" class="p-2 border border-rose-200 rounded-xl text-xs bg-white font-bold outline-none cursor-pointer">
+                <option value="ALL">-- Tất cả các Ban --</option>
+                <option value="Ban Nhân sự">Ban Nhân sự</option>
+                <option value="Ban Truyền thông">Ban Truyền thông</option>
+                <option value="Ban Sự kiện">Ban Sự kiện</option>
+                <option value="Ban Hậu cần">Ban Hậu cần</option>
+              </select>
+            </div>
+
+            <!-- BẢNG CTV 7 CỘT CHUẨN -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-rose-100 rounded-xl overflow-hidden min-w-[860px]">
+                <thead class="bg-rose-50/70 text-rose-950 font-bold border-b border-rose-100 whitespace-nowrap">
+                  <tr>
+                    <th class="p-3 w-12 text-center">STT</th>
+                    <th class="p-3 w-28">MSSV</th>
+                    <th class="p-3 min-w-[200px]">Họ và Tên & Lớp</th>
+                    <th class="p-3 w-36">Ban</th>
+                    <th class="p-3 text-center w-36">Trực văn phòng</th>
+                    <th class="p-3 text-center w-40">Hoạt động tham gia</th>
+                    <th class="p-3 text-center w-48">Xếp loại QTV</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-ctv-admin" class="divide-y divide-rose-50 bg-white">
+                  <tr>
+                    <td colspan="7" class="text-center py-6 text-slate-400 whitespace-nowrap">
+                      <i class="fa-solid fa-spinner fa-spin mr-1.5 text-rose-500"></i> Đang nạp danh sách CTV từ Google Sheets...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 7: QUẢN LÝ HOẠT ĐỘNG (CÓ NÚT TẠO MỚI & XEM DANH SÁCH CTV) -->
+        <!-- ======================================================== -->
+        <section id="tab-hoat-dong" class="hidden space-y-4">
+          <div class="glass-card rounded-[28px] p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-3">
+              <div>
+                <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
+                  <i class="fa-solid fa-bullhorn text-sky-600"></i> Quản Lý Tuyển & Điểm Danh Hoạt Động CTV
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Tạo hoạt động mới, hệ thống tự động đóng đơn khi đủ CTV. QTV điểm danh trực tiếp</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="openModalTaoHoatDongMoi()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md transition">
+                  <i class="fa-solid fa-plus"></i> Tạo Hoạt Động Mới
+                </button>
+                <button onclick="loadHoatDongCTVAdmin()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+              </div>
+            </div>
+
+            <div id="container-hoat-dong-list" class="space-y-4">
+              <p class="text-xs text-slate-400 text-center py-6">Đang tải danh sách hoạt động...</p>
+            </div>
+          </div>
+        </section>
+
       </div>
     </div>
-
   </main>
 
-  <!-- MODAL ĐỔI MẬT KHẨU ADMIN -->
-  <div id="modal-change-pass-admin" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border border-slate-200">
+  <!-- MODAL TẠO HOẠT ĐỘNG MỚI ĐẦY ĐỦ TIÊU CHÍ (QTV) -->
+  <div id="modal-create-activity" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-xl w-full space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-extrabold text-xs text-slate-800 uppercase">Đổi Mật Khẩu Admin</h3>
-        <button onclick="toggleChangePassModal(false)" class="text-slate-400 hover:text-rose-500 text-sm font-bold">&times;</button>
+        <h3 class="font-black text-sm uppercase text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-bullhorn text-sky-600"></i> Tạo Hoạt Động Tuyển CTV Mới
+        </h3>
+        <button onclick="toggleModal('modal-create-activity', false)" class="text-slate-400 hover:text-rose-500 font-bold text-lg">&times;</button>
       </div>
-      <form onsubmit="submitAdminChangePass(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-600 mb-1">Mật khẩu hiện tại *</label>
-          <input type="password" id="adm_old_pass" required class="w-full p-2.5 border rounded-xl bg-slate-50 outline-none">
+
+      <form onsubmit="submitTaoHoatDongMoi(event)" class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tiêu chí tham gia *</label>
+            <select id="act_tieu_chi" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold outline-none cursor-pointer focus:border-sky-500">
+              <option value="Bắt buộc">⭐ Hoạt động Bắt buộc</option>
+              <option value="Tự chọn" selected>✨ Hoạt động Tự chọn</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block font-bold text-slate-700 mb-1">Tên hoạt động / Chương trình *</label>
+            <input type="text" id="act_name" required placeholder="VD: Lễ Trao Bằng Tốt Nghiệp, Khám thuốc tình nguyện..." class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold outline-none focus:border-sky-500">
+          </div>
         </div>
-        <div>
-          <label class="block font-bold text-slate-600 mb-1">Mật khẩu mới *</label>
-          <input type="password" id="adm_new_pass" required class="w-full p-2.5 border rounded-xl bg-slate-50 outline-none">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Thời gian tổ chức (Từ mấy giờ đến mấy giờ) *</label>
+            <input type="text" id="act_thoi_gian" required placeholder="VD: 07:00 - 11:30 ngày 25/10/2026" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Địa điểm tổ chức *</label>
+            <input type="text" id="act_dia_diem" required placeholder="VD: Giảng đường 3D, Sân Đa Năng..." class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold outline-none focus:border-sky-500">
+          </div>
         </div>
-        <button type="submit" class="w-full py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow transition">
-          Cập Nhật Mật Khẩu
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Trang phục yêu cầu *</label>
+          <input type="text" id="act_trang_phuc" required placeholder="VD: Áo Đoàn, quần tây sẫm màu, giày bata/sandal..." class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold outline-none focus:border-sky-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Quyền lợi CTV tham gia (Nhiều quyền lợi) *</label>
+          <textarea id="act_quyen_loi" rows="3" required placeholder="VD: - Cộng 3 ca trực quy đổi&#10;- Giấy chứng nhận hoàn thành nhiệm vụ cấp trường&#10;- Bồi dưỡng ăn trưa & nước uống..." class="w-full p-2.5 border rounded-xl bg-slate-50 outline-none focus:border-sky-500 font-medium leading-relaxed"></textarea>
+        </div>
+
+        <div class="p-3.5 bg-sky-50/60 border border-sky-100 rounded-2xl space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="font-black text-sky-950 uppercase text-[11px]"><i class="fa-solid fa-users mr-1"></i> Nội dung tuyển dụng & Vị trí phân công:</span>
+            <button type="button" onclick="themDongViTriTuyen()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-[10.5px] font-bold">
+              <i class="fa-solid fa-plus mr-1"></i> Thêm vị trí
+            </button>
+          </div>
+          <div id="container-vi-tri-tuyen" class="space-y-2">
+            <div class="flex items-center gap-2 vi-tri-item">
+              <input type="text" placeholder="Tên công việc (VD: Hậu cần, Lễ tân...)" class="flex-1 p-2 bg-white border border-slate-200 rounded-xl font-bold outline-none vt-ten" required>
+              <div class="flex items-center gap-1">
+                <span class="text-slate-500 font-bold text-[11px]">SL:</span>
+                <input type="number" min="1" value="5" class="w-16 p-2 bg-white border border-slate-200 rounded-xl font-bold outline-none text-center vt-sl" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-submit-act" class="w-full py-3 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md transition text-xs">
+          XÁC NHẬN TẠO VÀ ĐĂNG HOẠT ĐỘNG
         </button>
       </form>
     </div>
   </div>
 
-  <script src="./config.js"></script>
-  <script>
-    let currentUser = null;
-    let globalAllowRegister = true;
-    let allLoadedReports = [];
-    let loadedCsvcList = [];
-    let loadedImportLogs = [];
-
-    try { currentUser = JSON.parse(localStorage.getItem("ump_user")); } catch(e) {}
-    if (!currentUser || !String(currentUser.role).toUpperCase().includes("ADMIN")) {
-      window.location.href = "index.html";
-    } else {
-      document.getElementById("admin-name").innerText = currentUser.hoTen || currentUser.username;
-    }
-
-    function logout() { localStorage.removeItem("ump_user"); window.location.href = "index.html"; }
-
-    function toggleChangePassModal(show) {
-      document.getElementById('modal-change-pass-admin').classList.toggle('hidden', !show);
-    }
-
-    async function submitAdminChangePass(e) {
-      e.preventDefault();
-      sendPost({
-        action: "CHANGE_PASSWORD",
-        data: {
-          username: currentUser.username,
-          oldPassword: document.getElementById("adm_old_pass").value.trim(),
-          newPassword: document.getElementById("adm_new_pass").value.trim()
-        }
-      }, () => {
-        toggleChangePassModal(false);
-        e.target.reset();
-        Swal.fire("Thành công", "Đã cập nhật mật khẩu mới!", "success");
-      });
-    }
-
-    function switchAdminTab(tab) {
-      ['baocao', 'csvc', 'lich-diemdanh', 'du-lieu-import', 'bangiao', 'xeploai', 'hoatdong'].forEach(t => {
-        const sec = document.getElementById(`sec-${t}`);
-        if (sec) sec.classList.add("hidden");
-      });
-      const map = {
-        'baocao': 'tab-btn-bc', 'csvc': 'tab-btn-csvc', 'lich-diemdanh': 'tab-btn-ldd',
-        'du-lieu-import': 'tab-btn-dli', 'bangiao': 'tab-btn-bg', 'xeploai': 'tab-btn-xl', 'hoatdong': 'tab-btn-hd'
-      };
-      Object.values(map).forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition font-bold";
-      });
-      document.getElementById(`sec-${tab}`).classList.remove("hidden");
-      document.getElementById(map[tab]).className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-sky-500 text-white shadow-md transition font-bold";
-
-      if (tab === 'baocao') { loadReportingMonthsGrid(); loadReportsAdmin(); }
-      else if (tab === 'csvc') loadCsvcAdmin();
-      else if (tab === 'lich-diemdanh') { 
-        document.getElementById("admin-shift-picker").value = new Date().toISOString().split('T')[0];
-        loadAdminShiftsList();
-        loadTodayAttendance();
-      }
-      else if (tab === 'du-lieu-import') loadImportedDataLogs();
-      else if (tab === 'bangiao') loadVatPhamOrdersAdmin();
-      else if (tab === 'xeploai') loadEvaluationTable();
-      else if (tab === 'hoatdong') loadAdminActivities();
-    }
-
-    // 1. MỞ/KHÓA THÁNG TRỰC QUAN
-    async function loadReportingMonthsGrid() {
-      const container = document.getElementById("months-toggle-grid");
-      try {
-        const res = await fetch(`${API_URL}?action=GET_ACTIVE_MONTHS_STATUS`);
-        const data = await res.json();
-        if (data.success && data.list.length) {
-          container.innerHTML = data.list.map(m => {
-            const monthVal = m.thang || m.month;
-            const monthNum = monthVal ? monthVal.split('-')[1] : "??";
-            return `
-              <button onclick="toggleMonthEasy('${monthVal}', ${!m.isOpen})" class="p-2 rounded-xl border text-center transition ${m.isOpen ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-black shadow-xs' : 'bg-slate-50 border-slate-200 text-slate-400 font-semibold'}">
-                <span class="block text-[11px]">Tháng ${monthNum}</span>
-                <span class="text-[9px] uppercase font-bold">${m.isOpen ? 'Mở' : 'Khóa'}</span>
-              </button>
-            `;
-          }).join('');
-        }
-      } catch(e) {}
-    }
-
-    async function toggleMonthEasy(month, isOpen) {
-      sendPost({ action: "QTV_TOGGLE_MONTH_EASY", data: { month: month, isOpen: isOpen } }, () => {
-        loadReportingMonthsGrid();
-        Swal.fire({ icon: "success", title: "Thành công", text: `Đã ${isOpen ? 'mở' : 'khóa'} tháng ${month}!`, timer: 1200, showConfirmButton: false });
-      });
-    }
-
-    async function loadReportsAdmin() {
-      const m = document.getElementById("filter-bc-month").value;
-      const tbody = document.getElementById("bc-admin-body");
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Đang đồng bộ...</td></tr>`;
-      try {
-        const res = await fetch(`${API_URL}?action=GET_FULL_REPORT_SUMMARY&month=${encodeURIComponent(m)}`);
-        const data = await res.json();
-        if (!data.success || !data.reports.length) return tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Không có báo cáo!</td></tr>`;
-        allLoadedReports = data.reports;
-        document.getElementById("badge-bc-stats").innerText = `Tổng số: ${allLoadedReports.length} đơn vị`;
-        renderReportTable(allLoadedReports);
-      } catch(e) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500">Lỗi nạp!</td></tr>`; }
-    }
-
-    function renderReportTable(reports) {
-      const tbody = document.getElementById("bc-admin-body");
-      tbody.innerHTML = reports.map(r => {
-        const isLate = checkLate(r.thang, r.ngayNop);
-        return `
-          <tr class="hover:bg-slate-50">
-            <td class="p-3 font-bold">${r.tenDonVi}</td>
-            <td class="p-3 text-center font-bold">${r.thang}</td>
-            <td class="p-3 text-center text-slate-500 font-mono text-[11px]">${r.ngayNop}</td>
-            <td class="p-3 text-center">${isLate ? '<span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-700">Trễ hạn</span>' : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700">Đúng hạn</span>'}</td>
-            <td class="p-3 max-w-xs truncate">${r.noiDungKienNghi || "---"}</td>
-            <td class="p-3 text-center">${r.linkFileBaoCao ? `<a href="${r.linkFileBaoCao}" target="_blank" class="text-sky-600 font-bold underline">Word</a>` : '---'}</td>
-            <td class="p-3 text-center">${r.linkFileMinhChung ? `<a href="${r.linkFileMinhChung}" target="_blank" class="text-purple-600 font-bold underline">Drive</a>` : '---'}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function checkLate(thang, ngayNopStr) {
-      if (!thang) return false;
-      const [y, m] = thang.split("-").map(Number);
-      let dM = m + 1, dY = y;
-      if (dM > 12) { dM = 1; dY += 1; }
-      const deadline = new Date(dY, dM - 1, 15, 17, 0, 0);
-      return new Date() > deadline;
-    }
-
-    function exportFullReportsExcel() {
-      if (!allLoadedReports.length) return Swal.fire("Trống", "Chưa có báo cáo để xuất!", "info");
-      const exportData = allLoadedReports.map(r => ({
-        "Đơn Vị": r.tenDonVi,
-        "Kỳ Báo Cáo": r.thang,
-        "Thời Gian Nộp": r.ngayNop,
-        "Tiến Độ": checkLate(r.thang, r.ngayNop) ? "Nộp trễ hạn" : "Đúng hạn",
-        "Số Hoạt Động": r.soLuongHoatDong,
-        "Kiến Nghị": r.noiDungKienNghi || "",
-        "Link Word": r.linkFileBaoCao || "",
-        "Link Drive": r.linkFileMinhChung || ""
-      }));
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "BaoCaoTongHop");
-      XLSX.writeFile(wb, "Tong_Hop_Bao_Cao_Doan_Hoi.xlsx");
-    }
-
-    // 2. DUYỆT CSVC
-    async function loadCsvcAdmin() {
-      const tbody = document.getElementById("csvc-admin-body");
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Đang tải...</td></tr>`;
-
-      try {
-        const res = await fetch(`${API_URL}?action=GET_PENDING_CSVC`);
-        const data = await res.json();
-        if (!data.success || !data.orders.length) return tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Không có đơn!</td></tr>`;
-        loadedCsvcList = data.orders;
-
-        tbody.innerHTML = loadedCsvcList.map(o => {
-          const isApproved = o.trangThai === "Đã duyệt";
-          return `
-            <tr class="hover:bg-sky-50/40 transition cursor-pointer" onclick="showCsvcDetailToCopy('${o.maDon}')">
-              <td class="p-3 font-mono font-bold text-sky-700">${o.maDon}</td>
-              <td class="p-3"><b>${o.diaDiem}</b><br><span class="text-[10px] text-slate-400">${o.loai}</span></td>
-              <td class="p-3">${o.nguoiPhuTrach}<br><span class="text-[10px] text-slate-400">${o.sdt}</span></td>
-              <td class="p-3 text-[11px] text-slate-600 font-medium">${o.batDau}<br>${o.ketThuc}</td>
-              <td class="p-3 max-w-xs truncate text-slate-600">${o.noiDung}</td>
-              <td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${isApproved ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${o.trangThai}</span></td>
-              <td class="p-3 text-center" onclick="event.stopPropagation()">
-                <div class="flex items-center justify-center gap-1">
-                  ${!isApproved 
-                    ? `<button onclick="updateCsvcStatus('${o.maDon}', 'Đã duyệt')" class="px-2 py-1 bg-emerald-600 text-white rounded-lg font-bold text-[10px]">Duyệt</button>`
-                    : `<button onclick="cancelCsvcApproval('${o.maDon}')" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-[10px]">Hủy duyệt</button>`
-                  }
-                  <button onclick="openCsvcChat('${o.maDon}', '${o.diaDiem}')" class="px-2 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-lg font-bold text-[10px]">Trao đổi</button>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
-      } catch(e) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500">Lỗi!</td></tr>`; }
-    }
-
-    function showCsvcDetailToCopy(maDon) {
-  const o = loadedCsvcList.find(item => item.maDon === maDon);
-  if (!o) return;
-
-  Swal.fire({
-    title: `<span class="text-sm font-black uppercase text-slate-800">Chi Tiết Đơn: ${o.diaDiem}</span>`,
-    html: `
-      <div class="text-left text-xs space-y-2 p-2">
-        <div class="p-2.5 bg-slate-50 border rounded-xl space-y-1">
-          <p><b>Địa điểm:</b> ${o.diaDiem} (${o.loai})</p>
-          <p><b>Người phụ trách:</b> ${o.nguoiPhuTrach} | <b>SĐT:</b> ${o.sdt}</p>
-          <p><b>Thời gian:</b> Từ ${o.batDau} đến ${o.ketThuc}</p>
-          <p><b>Nội dung:</b> ${o.noiDung}</p>
-          ${o.linkVanBan ? `<p><b>File kế hoạch:</b> <a href="${o.linkVanBan}" target="_blank" class="text-sky-600 underline font-bold">Xem file Drive</a></p>` : ''}
+  <!-- MODAL CHỤP ẢNH HIỆN TRẠNG BÀN GIAO VẬT PHẨM (CAMERA) -->
+  <div id="modal-camera-vp" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
+      <h3 class="font-black text-xs uppercase text-slate-800">Chụp Ảnh Hiện Trạng Vật Phẩm</h3>
+      <p class="text-[11px] text-slate-500 leading-relaxed">Chụp trực tiếp từ camera điện thoại/laptop để lưu làm minh chứng bàn giao hoặc hoàn trả</p>
+      
+      <div class="space-y-3">
+        <input type="file" id="camera_input" accept="image/*" capture="environment" onchange="previewCapturedImage(this)" class="w-full text-xs">
+        <div id="camera_preview_box" class="hidden border rounded-xl overflow-hidden h-44 bg-slate-50 flex items-center justify-center">
+          <img id="camera_preview_img" class="h-full w-full object-cover">
         </div>
       </div>
-    `,
-    width: '580px',
-    showCancelButton: true,
-    showDenyButton: true,
-    confirmButtonText: '<i class="fa-solid fa-file-word mr-1"></i> Xuất File Word Công Văn',
-    denyButtonText: '<i class="fa-solid fa-copy mr-1"></i> Copy thông tin',
-    cancelButtonText: 'Đóng',
-    confirmButtonColor: '#2563eb',
-    denyButtonColor: '#64748b'
-  }).then(async (r) => {
-    if (r.isConfirmed) {
-      // Gọi lệnh tự động điền mẫu Word
+
+      <div class="flex gap-2">
+        <button onclick="toggleModal('modal-camera-vp', false)" class="flex-1 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-600">Hủy</button>
+        <button onclick="uploadCapturedPhoto()" id="btn-confirm-upload-photo" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold">Lưu Ảnh Lên Drive</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CẬP NHẬT THÔNG TIN CÁ NHÂN QUẢN TRỊ VIÊN -->
+  <div id="modal-profile" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-black text-xs uppercase text-slate-800">Cập Nhật Thông Tin Cá Nhân</h3>
+        <button onclick="toggleModal('modal-profile', false)" class="text-slate-400 hover:text-rose-500 font-bold">&times;</button>
+      </div>
+      <form onsubmit="saveProfileAdmin(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">Họ và Tên *</label>
+          <input type="text" id="prof_hoten" required class="w-full p-2.5 border rounded-xl bg-slate-50 outline-none">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">Số điện thoại *</label>
+          <input type="tel" id="prof_sdt" required class="w-full p-2.5 border rounded-xl bg-slate-50 outline-none">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-600 mb-1">Lớp</label>
+          <input type="text" id="prof_lop" class="w-full p-2.5 border rounded-xl bg-slate-50 outline-none">
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow">Lưu Thay Đổi</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 border-t border-slate-200/80 text-slate-500 text-xs z-10 mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pb-3 text-left">
+      <div>
+        <h4 class="font-extrabold text-[#0284c7] uppercase text-[11px] mb-1 tracking-tight">HỆ THỐNG QUẢN LÝ HOẠT ĐỘNG</h4>
+        <p class="text-slate-600 font-medium leading-relaxed text-xs">ĐOÀN THANH NIÊN - HỘI SINH VIÊN ĐẠI HỌC Y DƯỢC TPHCM</p>
+      </div>
+      <div>
+        <h4 class="font-extrabold text-[#0284c7] uppercase text-[11px] mb-1 tracking-tight">📍 ĐỊA CHỈ</h4>
+        <div class="text-slate-600 font-medium leading-relaxed space-y-0.5 text-xs">
+          <div>• 540 Ngô Gia Tự, Phường An Đông, TP. HCM</div>
+          <div>• 217 Hồng Bàng, Phường Chợ Lớn, TP. HCM</div>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-extrabold text-[#0284c7] uppercase text-[11px] mb-1 tracking-tight">✉ LIÊN HỆ &amp; HỖ TRỢ</h4>
+        <div class="text-slate-600 font-medium leading-relaxed space-y-0.5 text-xs">
+          <div>• Đoàn - Hội: <a href="mailto:vpdhump@gmail.com" class="text-[#0284c7] font-semibold hover:underline">vpdhump@gmail.com</a></div>
+          <div>• Fanpage: <a href="https://www.facebook.com/tuoitreyduochcm" target="_blank" class="text-[#0284c7] font-semibold hover:underline">Tuổi trẻ Y Dược</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="pt-3 border-t border-slate-200/60 text-center space-y-0.5">
+      <div class="font-bold text-slate-700 text-xs">
+        © 2026 VĂN PHÒNG ĐOÀN THANH NIÊN – HỘI SINH VIÊN ĐẠI HỌC Y DƯỢC TP. HỒ CHÍ MINH
+      </div>
+      <div class="text-[11px] text-slate-400 italic">The website was developed by NTCL team</div>
+    </div>
+  </footer>
+
+  <script src="./config.js"></script>
+  <script>
+    let loadedCsvcList = [];
+    let loadedBaoCaoList = [];
+    let loadedHoatDongList = [];
+    let activePhotoMaDon = "";
+    let activePhotoType = "BAN_GIAO";
+    let activePhotoBase64 = "";
+    let smartParsedRows = [];
+    let cachedSysNotis = [];
+    let currentNotiFilter = "ALL";
+
+    window.addEventListener("DOMContentLoaded", () => {
+      try {
+        const u = JSON.parse(localStorage.getItem("ump_admin_user"));
+        if (u && u.hoTen) {
+          const nameEl = document.getElementById("admin-display-name");
+          const footerEl = document.getElementById("user-footer-name");
+          if (nameEl) nameEl.innerText = `${u.hoTen} (${u.lop || 'BTV'})`;
+          if (footerEl) footerEl.innerText = u.hoTen;
+        }
+      } catch(e) {}
+
+      loadCsvcDataAdmin();
+      loadMonthsAdmin();
+      loadBaoCaoDataAdmin();
+      loadDanhSachCTVAdmin();
+      loadCtvSubmittedFilesAdmin();
+      
+      const todayIso = new Date().toISOString().split("T")[0];
+      const shiftDateInput = document.getElementById("admin_select_shift_date");
+      if (shiftDateInput) shiftDateInput.value = todayIso;
+
+      fetchSystemNotifications();
+      setInterval(fetchSystemNotifications, 30000);
+    });
+
+    // CHUYỂN TAB ĐỒNG BỘ 100% ID
+    function switchAdminTab(tabId) {
+      const allTabs = ['tab-baocao', 'tab-csvc', 'tab-lich-truc', 'tab-import-data', 'tab-vat-pham', 'tab-xep-loai', 'tab-hoat-dong'];
+      allTabs.forEach(id => {
+        const sec = document.getElementById(id);
+        const nav = document.getElementById(`nav-${id}`);
+        if (sec) sec.classList.add('hidden');
+        if (nav) {
+          nav.className = "w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50";
+        }
+      });
+
+      const activeSec = document.getElementById(tabId);
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if (activeSec) activeSec.classList.remove('hidden');
+      if (activeNav) {
+        activeNav.className = "w-full text-left px-3.5 py-2.5 rounded-2xl font-black text-xs flex items-center justify-between transition bg-sky-600 text-white shadow-md shadow-sky-600/20";
+      }
+
+      if (tabId === 'tab-csvc') loadCsvcDataAdmin();
+      if (tabId === 'tab-vat-pham') loadDonVatPhamAdmin();
+      if (tabId === 'tab-xep-loai') loadDanhSachCTVAdmin();
+      if (tabId === 'tab-hoat-dong') loadHoatDongCTVAdmin();
+      if (tabId === 'tab-lich-truc') loadLichTrucTheoNgayAdmin();
+      if (tabId === 'tab-import-data') loadCtvSubmittedFilesAdmin();
+    }
+
+    function toggleModal(modalId, show) {
+      document.getElementById(modalId).classList.toggle('hidden', !show);
+    }
+
+    // =========================================================================
+    // 1. PHÊ DUYỆT CSVC & XUẤT CÔNG VĂN TỔNG HỢP
+    // =========================================================================
+    async function loadCsvcDataAdmin() {
+      const tbody = document.getElementById("tbody-csvc-admin");
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-sky-600"></i> Đang tải dữ liệu CSVC từ máy chủ...</td></tr>`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=GET_ADMIN_CSVC`);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.items)) {
+          loadedCsvcList = data.items;
+          const badgeEl = document.getElementById("badge-nav-csvc");
+          if (badgeEl) badgeEl.innerText = loadedCsvcList.length;
+          renderCsvcTable();
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Không thể lấy dữ liệu CSVC!'}</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">Lỗi kết nối máy chủ (${e.message})!</td></tr>`;
+      }
+    }
+
+    function renderCsvcTable() {
+      const tbody = document.getElementById("tbody-csvc-admin");
+      const masterChk = document.getElementById("chk-master-csvc");
+      if (masterChk) masterChk.checked = false;
+      updateSelectedCsvcCount();
+
+      if (loadedCsvcList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Không có đơn CSVC nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = loadedCsvcList.map(it => `
+        <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="handleCsvcRowClick(event, '${it.maDon}')">
+          <td class="p-3 text-center" onclick="event.stopPropagation()">
+            <input type="checkbox" value="${it.maDon}" name="chk_csvc_item" onchange="updateSelectedCsvcCount()" class="w-4 h-4 rounded text-sky-600 cursor-pointer">
+          </td>
+          <td class="p-3">
+            <b class="text-slate-800 block text-xs">${it.diaDiem}</b>
+            <span class="text-slate-400 text-[10.5px]">Loại: ${it.loai || 'CSVC'}</span>
+          </td>
+          <td class="p-3">
+            <span class="text-slate-800 font-semibold text-[11.5px] block">${it.nguoiPhuTrach || '---'}</span>
+            <span class="text-sky-700 text-[10.5px] font-medium block">${it.tenDonVi || '---'}</span>
+          </td>
+          <td class="p-3 text-[11px] leading-relaxed">
+            <div>Từ: ${it.batDau}</div>
+            <div>Đến: ${it.ketThuc}</div>
+          </td>
+          <td class="p-3 font-medium text-slate-800">
+            <div>${it.noiDung || it.tenHoatDong || '---'}</div>
+            ${it.linkVanBan ? `<a href="${it.linkVanBan}" target="_blank" onclick="event.stopPropagation()" class="text-sky-600 underline text-[10.5px] font-bold block mt-0.5"><i class="fa-solid fa-file-pdf mr-0.5"></i>Xem kế hoạch</a>` : ''}
+          </td>
+          <td class="p-3 text-center">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${it.trangThai === 'Đã duyệt' ? 'bg-emerald-100 text-emerald-800' : (it.trangThai === 'Từ chối' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')}">
+              ${it.trangThai || 'Chờ duyệt'}
+            </span>
+            ${it.ghiChu ? `<div class="mt-1 text-[10.5px] text-sky-800 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 text-left leading-tight" title="${it.ghiChu}"><i class="fa-regular fa-comment-dots mr-1"></i>${it.ghiChu}</div>` : ''}
+          </td>
+          <td class="p-3 text-center" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-center gap-1 flex-wrap">
+              ${it.trangThai !== 'Đã duyệt' ? `<button onclick="duyetDonCsvc('${it.maDon}', 'Đã duyệt')" class="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold text-[10.5px] shadow-xs">Duyệt</button>` : ''}
+              ${it.trangThai === 'Đã duyệt' ? `<button onclick="duyetDonCsvc('${it.maDon}', 'Chờ duyệt')" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-[10.5px] shadow-xs">Hủy duyệt</button>` : ''}
+              <button onclick="duyetDonCsvc('${it.maDon}', 'Từ chối')" class="px-2 py-1 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 rounded-lg font-bold text-[10.5px] border border-slate-200">Từ chối</button>
+              <button onclick="moTraoDoiCsvc('${it.maDon}', '${it.diaDiem}', \`${it.ghiChu || ''}\`)" class="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-lg font-bold text-[10.5px] border border-sky-200" title="Nhắn tin / Trao đổi với đơn vị"><i class="fa-regular fa-comment-dots"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleSelectAllCsvc(master) {
+      document.querySelectorAll('input[name="chk_csvc_item"]').forEach(chk => chk.checked = master.checked);
+      updateSelectedCsvcCount();
+    }
+
+    function updateSelectedCsvcCount() {
+      const count = document.querySelectorAll('input[name="chk_csvc_item"]:checked').length;
+      document.getElementById("count-selected-csvc").innerText = count;
+    }
+
+    function handleCsvcRowClick(e, maDon) {
+      const o = loadedCsvcList.find(x => x.maDon === maDon);
+      if (!o) return;
+
       Swal.fire({
-        title: "AI & Hệ thống đang điền công văn...",
-        html: "Đang nạp file mẫu, ráp thông tin và định dạng .docx...",
+        title: `<span class="text-sm font-black uppercase text-slate-800">CHI TIẾT ĐƠN: ${o.diaDiem}</span>`,
+        html: `
+          <div class="text-left text-xs space-y-2 p-2">
+            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5 text-slate-700">
+              <p><b>Địa điểm:</b> ${o.diaDiem} (${o.loai})</p>
+              <p><b>Người phụ trách:</b> ${o.nguoiPhuTrach} • <b>Đơn vị:</b> ${o.tenDonVi}</p>
+              <p><b>Thời gian:</b> Từ ${o.batDau} đến ${o.ketThuc}</p>
+              <p><b>Nội dung:</b> ${o.noiDung || o.tenHoatDong}</p>
+              <p><b>Trạng thái:</b> <span class="font-bold">${o.trangThai}</span></p>
+              ${o.ghiChu ? `<p class="p-2 bg-sky-50 rounded-xl border border-sky-200 text-sky-800"><b>Trao đổi:</b> ${o.ghiChu}</p>` : ''}
+              ${o.linkVanBan ? `<p><b>File kế hoạch:</b> <a href="${o.linkVanBan}" target="_blank" class="text-sky-600 underline font-bold">Xem file Drive</a></p>` : ''}
+            </div>
+          </div>
+        `,
+        width: '540px',
+        confirmButtonText: 'Đóng',
+        confirmButtonColor: '#0284c7'
+      });
+    }
+
+    async function moTraoDoiCsvc(maDon, diaDiem, ghiChuCu) {
+      const { value: noiDung } = await Swal.fire({
+        title: `<span class="text-sm font-black uppercase text-sky-950">TRAO ĐỔI VỚI ĐƠN VỊ</span>`,
+        html: `
+          <div class="text-left text-xs space-y-2 p-1 text-slate-600">
+            <p>Hạng mục: <b>${diaDiem}</b></p>
+            <label class="block font-bold text-slate-700 mt-2">Nhập ghi chú / lời nhắn trao đổi cho đơn vị đăng ký:</label>
+            <textarea id="swal-ghi-chu-csvc" rows="3" placeholder="VD: Đã duyệt nhưng đề nghị đơn vị tự vệ sinh sau khi sử dụng; hoặc: Thiếu chữ ký BGH..." class="w-full p-2.5 border rounded-xl bg-slate-50 text-xs font-medium outline-none focus:bg-white focus:border-sky-500">${ghiChuCu || ''}</textarea>
+          </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Lưu trao đổi',
+        cancelButtonText: 'Đóng',
+        confirmButtonColor: '#0284c7',
+        preConfirm: () => {
+          return document.getElementById("swal-ghi-chu-csvc").value.trim();
+        }
+      });
+
+      if (noiDung !== undefined) {
+        Swal.fire({ title: "Đang lưu trao đổi...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action: "DUYET_DON_CSVC", data: { maDon: maDon, ghiChu: noiDung } })
+          });
+          const data = await res.json();
+          if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Thành công!', text: 'Đã lưu trao đổi với đơn vị!', timer: 1300, showConfirmButton: false });
+            loadCsvcDataAdmin();
+          } else {
+            Swal.fire("Lỗi", data.message || "Không thể lưu trao đổi!", "error");
+          }
+        } catch(e) {
+          Swal.fire("Lỗi kết nối", e.message, "error");
+        }
+      }
+    }
+
+    async function duyetDonCsvc(maDon, status) {
+      Swal.fire({ title: "Đang xử lý...", text: `Đang cập nhật trạng thái ${status}...`, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "DUYET_DON_CSVC", data: { maDon: maDon, status: status } })
+        });
+        const data = await res.json();
+        if (data.success) {
+          Swal.fire({ icon: 'success', title: 'Thành công!', text: `Đã cập nhật trạng thái: ${status}`, timer: 1300, showConfirmButton: false });
+          loadCsvcDataAdmin();
+        } else {
+          Swal.fire("Lỗi", data.message || "Không thể cập nhật trạng thái đơn!", "error");
+        }
+      } catch (e) {
+        Swal.fire("Lỗi kết nối", "Không thể gửi lệnh duyệt đến máy chủ!", "error");
+      }
+    }
+
+    async function xuatCongVanTongHopMulti() {
+      const checkedBoxes = document.querySelectorAll('input[name="chk_csvc_item"]:checked');
+      if (checkedBoxes.length === 0) {
+        return Swal.fire("Chưa chọn hoạt động", "Vui lòng tick chọn ít nhất 1 dòng đơn để tạo công văn tổng hợp!", "warning");
+      }
+      let selectedItems = [];
+      checkedBoxes.forEach(chk => {
+        const item = loadedCsvcList.find(x => x.maDon === chk.value);
+        if (item) selectedItems.push(item);
+      });
+
+      Swal.fire({
+        title: "Đang tạo công văn Word tổng hợp...",
+        text: `Hệ thống đang ghép ${selectedItems.length} hoạt động vào bảng công văn theo đúng thể thức...`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
       });
@@ -635,330 +1016,1222 @@
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "XUAT_CONG_VAN_WORD",
-            data: o
-          })
+          body: JSON.stringify({ action: "MERGE_CONG_VAN_WORD", data: { items: selectedItems } })
         });
         const data = await res.json();
         if (data.success) {
           Swal.fire({
-            icon: 'success',
-            title: 'Đã tạo xong công văn!',
+            icon: "success",
+            title: "Tạo công văn thành công!",
             html: `
-              <p class="text-xs text-slate-600 mb-3">Công văn đã được AI chuẩn hóa và điền vào mẫu Word hoàn chỉnh.</p>
+              <p class="text-xs text-slate-600 mb-3">Đã tổng hợp hoàn chỉnh <b>${selectedItems.length} hoạt động</b> vào file Word.</p>
               <div class="flex justify-center gap-2">
-                <a href="${data.downloadUrl}" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-blue-700">
+                <a href="${data.downloadUrl}" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md">
                   <i class="fa-solid fa-download mr-1"></i> Tải file .docx về máy
                 </a>
-                <a href="${data.docViewUrl}" target="_blank" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border hover:bg-slate-200">
+                <a href="${data.docViewUrl}" target="_blank" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold border">
                   Mở trên Docs
                 </a>
               </div>
             `,
             showConfirmButton: false,
             showCancelButton: true,
-            cancelButtonText: 'Đóng'
+            cancelButtonText: "Đóng"
           });
         } else {
           Swal.fire("Lỗi", data.message, "error");
         }
-      } catch(err) {
-        Swal.fire("Lỗi kết nối", "Không thể tạo file công văn!", "error");
+      } catch (e) {
+        Swal.fire("Lỗi kết nối", "Không thể tạo công văn tổng hợp!", "error");
       }
-    } else if (r.isDenied) {
-      const fullText = `MÃ ĐƠN: ${o.maDon}\nĐỊA ĐIỂM: ${o.diaDiem}\nNGƯỜI PHỤ TRÁCH: ${o.nguoiPhuTrach}\nTHỜI GIAN: ${o.batDau} đến ${o.ketThuc}\nNỘI DUNG: ${o.noiDung}`;
-      navigator.clipboard.writeText(fullText);
-      Swal.fire("Đã sao chép!", "Thông tin đơn đã lưu vào bộ nhớ tạm.", "success");
     }
-  });
-}
 
-    function cancelCsvcApproval(maDon) {
+    // =========================================================================
+    // 2. BÁO CÁO THÁNG & MỞ KHÓA THÁNG BẤT KỲ
+    // =========================================================================
+    async function loadMonthsAdmin() {
+      const container = document.getElementById("container-months-admin");
+      container.innerHTML = `<span class="text-xs text-slate-400">Đang nạp danh sách kỳ báo cáo...</span>`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=GET_ALL_MONTHS_ADMIN`);
+        const data = await res.json();
+
+        if (data.success && data.list && data.list.length > 0) {
+          container.innerHTML = data.list.map(m => {
+            const isOpen = m.status === 'OPEN';
+            const displayLabel = m.label ? (m.label.startsWith("Tháng") ? m.label : `Tháng ${m.label}`) : `Tháng ${m.thang}`;
+            return `
+              <div class="flex items-center gap-2 p-2 px-3 border ${isOpen ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-slate-50/70'} rounded-2xl shadow-xs">
+                <span class="text-xs font-black ${isOpen ? 'text-emerald-950' : 'text-slate-500'}">${displayLabel}</span>
+                <button onclick="toggleMonthAdmin('${m.thang}', '${isOpen ? 'LOCK' : 'OPEN'}')" class="px-2.5 py-1 rounded-xl text-[10px] font-black tracking-wide ${isOpen ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-600'} transition shadow-xs">
+                  ${isOpen ? 'MỞ' : 'KHÓA'}
+                </button>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        container.innerHTML = `<span class="text-xs text-rose-500">Lỗi kết nối máy chủ!</span>`;
+      }
+    }
+
+    async function toggleMonthAdmin(thang, newStatus) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "UPDATE_MONTH_STATUS", data: { thang: thang, status: newStatus } })
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadMonthsAdmin();
+        }
+      } catch (e) {
+        Swal.fire("Lỗi", "Không thể cập nhật trạng thái tháng!", "error");
+      }
+    }
+
+    async function themVaDoiTrangThaiThang(isOpen) {
+      const val = document.getElementById("admin_new_month_input").value;
+      if (!val) return Swal.fire("Chưa chọn tháng", "Vui lòng chọn kỳ tháng cần thao tác!", "warning");
+      await toggleMonthAdmin(val, isOpen ? "OPEN" : "LOCK");
+      Swal.fire("Thành công", `Đã ${isOpen ? "mở" : "khóa"} kỳ báo cáo ${val}!`, "success");
+    }
+
+    async function loadBaoCaoDataAdmin() {
+      const tbody = document.getElementById("tbody-baocao-admin");
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tải dữ liệu báo cáo...</td></tr>`;
+      try {
+        const res = await fetch(`${API_URL}?action=GET_LIST_BAO_CAO_ADMIN`);
+        const data = await res.json();
+        if (data.success && data.reports && data.reports.length > 0) {
+          loadedBaoCaoList = data.reports;
+          tbody.innerHTML = loadedBaoCaoList.map(r => `
+            <tr class="hover:bg-purple-50/40 transition">
+              <td class="p-3 font-mono font-bold text-purple-900">${r.maBC}</td>
+              <td class="p-3">${r.ngayNop}</td>
+              <td class="p-3 font-bold">${r.thang}</td>
+              <td class="p-3 font-semibold text-slate-800">${r.tenDonVi}</td>
+              <td class="p-3 text-center">
+                <span class="px-2.5 py-0.5 rounded text-[10px] font-bold ${r.trangThai === 'DUNG_HAN' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                  ${r.trangThai === 'DUNG_HAN' ? 'Đúng hạn' : 'Trễ hạn'}
+                </span>
+              </td>
+              <td class="p-3 text-center">
+                <button onclick="xemChiTietBaoCao('${r.maBC}')" class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl font-bold border border-purple-200 text-xs shadow-xs transition">
+                  <i class="fa-regular fa-eye mr-1"></i> Xem nội dung
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Chưa có đơn vị nào nộp báo cáo.</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">Lỗi tải dữ liệu báo cáo!</td></tr>`;
+      }
+    }
+
+    function xemChiTietBaoCao(maBC) {
+      const listSource = (typeof loadedBaoCaoList !== 'undefined') ? loadedBaoCaoList : [];
+      const r = listSource.find(x => String(x.maBC).trim() === String(maBC).trim());
+      if (!r) return;
+
+      const qa = r.qa || {};
+      const ct = r.chiTieu || [];
+
       Swal.fire({
-        title: "Xác nhận hủy duyệt?",
-        text: "Đơn này sẽ được chuyển trạng thái về 'Chờ duyệt'!",
+        title: `<div class="text-left"><span class="text-sm font-black uppercase text-purple-950 block">NỘI DUNG BÁO CÁO THÁNG</span><span class="text-xs text-slate-400 font-mono">${r.maBC}</span></div>`,
+        html: `
+          <div class="text-left space-y-3.5 pt-2 max-h-[75vh] overflow-y-auto text-xs text-slate-700 pr-1">
+            <div class="p-3 bg-purple-50/70 border border-purple-100 rounded-2xl space-y-1">
+              <p><b>Đơn vị:</b> <span class="font-bold text-slate-900">${r.tenDonVi}</span></p>
+              <div class="flex justify-between pt-0.5">
+                <span><b>Kỳ báo cáo:</b> <span class="font-bold text-purple-900">${r.thang}</span></span>
+                <span><b>Thời gian nộp:</b> ${r.ngayNop}</span>
+              </div>
+              <p><b>Tiến độ:</b> <span class="font-bold ${r.trangThai === 'DUNG_HAN' ? 'text-emerald-700' : 'text-rose-700'}">${r.trangThai === 'DUNG_HAN' ? 'Nộp đúng hạn' : 'Nộp trễ hạn'}</span></p>
+            </div>
+
+            <div>
+              <span class="block font-black text-purple-950 uppercase text-[11px] mb-1.5"><i class="fa-solid fa-chart-column mr-1"></i> Số liệu 14 chỉ tiêu:</span>
+              <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5 text-center text-[10.5px]">
+                ${ct.map((val, idx) => `
+                  <div class="p-1.5 bg-slate-50 border border-slate-200 rounded-lg">
+                    <span class="text-slate-400 block font-semibold text-[9.5px]">CT ${idx + 1}</span>
+                    <b class="text-purple-950 font-black text-xs">${val}</b>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="space-y-2.5">
+              <span class="block font-black text-purple-950 uppercase text-[11px]"><i class="fa-solid fa-list-check mr-1"></i> Nội dung hoạt động đã triển khai:</span>
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <b class="text-slate-800 text-[11.5px] block">1. Đạo đức, tác phong, lối sống:</b>
+                <p class="text-slate-600 leading-relaxed font-medium whitespace-pre-line">${qa.daoDuc || 'Không có'}</p>
+              </div>
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <b class="text-slate-800 text-[11.5px] block">2. Học tập, sáng tạo, nghiên cứu khoa học:</b>
+                <p class="text-slate-600 leading-relaxed font-medium whitespace-pre-line">${qa.hocTap || 'Không có'}</p>
+              </div>
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <b class="text-slate-800 text-[11.5px] block">3. Tình nguyện vì cộng đồng:</b>
+                <p class="text-slate-600 leading-relaxed font-medium whitespace-pre-line">${qa.tinhNguyen || 'Không có'}</p>
+              </div>
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <b class="text-slate-800 text-[11.5px] block">4. Rèn luyện thể chất:</b>
+                <p class="text-slate-600 leading-relaxed font-medium whitespace-pre-line">${qa.theChat || 'Không có'}</p>
+              </div>
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <b class="text-slate-800 text-[11.5px] block">5. Hội nhập quốc tế:</b>
+                <p class="text-slate-600 leading-relaxed font-medium whitespace-pre-line">${qa.hoiNhap || 'Không có'}</p>
+              </div>
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <b class="text-slate-800 text-[11.5px] block">6. Hỗ trợ và đồng hành cùng sinh viên:</b>
+                <p class="text-slate-600 leading-relaxed font-medium whitespace-pre-line">${qa.hoTroSV || 'Không có'}</p>
+              </div>
+              <div class="p-2.5 bg-amber-50/60 rounded-xl border border-amber-200 space-y-1">
+                <b class="text-amber-950 text-[11.5px] block">📝 Khó khăn, vướng mắc &amp; Kiến nghị:</b>
+                <p class="text-slate-700 italic leading-relaxed font-medium whitespace-pre-line">${qa.kienNghi || 'Không có'}</p>
+              </div>
+            </div>
+          </div>
+        `,
+        width: '620px',
+        confirmButtonText: 'Đóng',
+        confirmButtonColor: '#7c3aed'
+      });
+    }
+
+    function openModalAiBaoCao() {
+      Swal.fire({
+        title: `<span class="text-sm font-black uppercase text-purple-950">AI Tổng Hợp Báo Cáo Tháng</span>`,
+        html: `
+          <div class="text-left text-xs space-y-2 p-2">
+            <label class="font-bold text-slate-700 block">Nhập kỳ tháng cần tổng hợp (VD: 10/2026 hoặc 2026-10):</label>
+            <input type="text" id="swal-input-thang-ai" value="10/2026" class="w-full p-2.5 border rounded-xl font-bold bg-slate-50 outline-none">
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Bắt đầu tổng hợp bằng AI",
+        confirmButtonColor: "#7c3aed"
+      }).then(async (r) => {
+        if (r.isConfirmed) {
+          const thang = document.getElementById("swal-input-thang-ai").value.trim();
+          Swal.fire({
+            title: "AI đang tổng hợp toàn bộ báo cáo cơ sở...",
+            text: "Đang đọc các ý kiến hoạt động và biên tập văn phong công tác Đoàn...",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+          });
+
+          try {
+            const res = await fetch(API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action: "AI_MERGE_BAO_CAO", data: { thang: thang } })
+            });
+            const data = await res.json();
+            if (data.success) {
+              Swal.fire({
+                icon: "success",
+                title: "Hoàn tất tổng hợp!",
+                html: `
+                  <p class="text-xs text-slate-600 mb-3">AI đã hoàn tất tổng hợp báo cáo tháng cho BTV Đoàn trường.</p>
+                  <a href="${data.downloadUrl}" target="_blank" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold inline-block shadow">Tải File Báo Cáo (.docx)</a>
+                `
+              });
+            } else {
+              Swal.fire("Lỗi", data.message, "error");
+            }
+          } catch (e) {
+            Swal.fire("Lỗi", "Không thể chạy AI tổng hợp", "error");
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // 3. LỊCH TRỰC CTV: CHỌN NGÀY VÀ XEM DANH SÁCH CTV ĐIỂM DANH
+    // =========================================================================
+    async function loadLichTrucTheoNgayAdmin() {
+      const dateVal = document.getElementById("admin_select_shift_date").value;
+      const tbody = document.getElementById("tbody-lich-truc-admin");
+      if (!tbody) return;
+
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-amber-500"></i> Đang tải danh sách ca trực...</td></tr>`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=GET_LICH_TRUC_CTV_BY_DATE&ngay=${encodeURIComponent(dateVal || "")}`);
+        const data = await res.json();
+        
+        if (data.success && Array.isArray(data.shifts)) {
+          if (data.shifts.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Không có CTV nào đăng ký trực vào ngày ${dateVal || 'được chọn'}.</td></tr>`;
+            return;
+          }
+
+          tbody.innerHTML = data.shifts.map((s, idx) => {
+            let badgeTrangThai = "";
+            if (s.trangThai === "HOP_LE") {
+              badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 flex items-center justify-center gap-1"><i class="fa-solid fa-circle-check"></i> Hợp lệ</span>`;
+            } else if (s.trangThai === "KHONG_HOP_LE") {
+              badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 flex items-center justify-center gap-1" title="${s.ghiChu || ''}"><i class="fa-solid fa-triangle-exclamation"></i> Không hợp lệ</span>`;
+            } else {
+              badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">Chưa điểm danh</span>`;
+            }
+
+            return `
+              <tr class="hover:bg-amber-50/40 transition">
+                <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
+                <td class="p-3">
+                  <b class="text-slate-800 block text-xs">${s.hoTen}</b>
+                  <span class="text-slate-400 font-mono text-[10.5px]">(${s.username})</span>
+                </td>
+                <td class="p-3 font-semibold text-slate-700">${s.lop || '---'}</td>
+                <td class="p-3 text-center">
+                  <span class="px-2.5 py-1 bg-amber-50 border border-amber-200 text-amber-900 rounded-lg font-black text-xs inline-block">
+                    ${s.khungGio || '---'}
+                  </span>
+                </td>
+                <td class="p-3 text-center font-mono font-bold text-emerald-700 text-xs">${s.checkIn || '---'}</td>
+                <td class="p-3 text-center font-mono font-bold text-slate-600 text-xs">${s.checkOut || '---'}</td>
+                <td class="p-3 text-center">${badgeTrangThai}</td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi nạp dữ liệu từ máy chủ!'}</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">Lỗi kết nối: ${err.message}</td></tr>`;
+      }
+    }
+
+    // =========================================================================
+    // 4. IMPORT DỮ LIỆU ĐỘNG THEO TAB
+    // =========================================================================
+    function capNhatTruongThongTinChung() {
+      const fileKey = document.getElementById("sel-target-file").value;
+      const tabName = (document.getElementById("sel-target-tab").value || "").toLowerCase();
+      const label = document.getElementById("label-loai-form");
+
+      const grpHD = document.getElementById("group-hoatdong-fields");
+      const grpGCN = document.getElementById("group-gcn-extra");
+      const grpCLB = document.getElementById("group-clb-extra");
+
+      if (fileKey === "FILE_GIAY_CHUNG_NHAN") {
+        label.innerText = "Chế độ: Giấy chứng nhận";
+        grpHD.classList.remove("hidden");
+        grpGCN.classList.remove("hidden");
+        grpCLB.classList.add("hidden");
+      } else if (fileKey === "FILE_CLB" && tabName.includes("thanhvien")) {
+        label.innerText = "Chế độ: Danh sách Thành viên CLB";
+        grpHD.classList.add("hidden");
+        grpGCN.classList.add("hidden");
+        grpCLB.classList.remove("hidden");
+      } else {
+        label.innerText = "Chế độ: Hoạt động / Minh chứng";
+        grpHD.classList.remove("hidden");
+        grpGCN.classList.add("hidden");
+        grpCLB.classList.add("hidden");
+      }
+    }
+
+    async function onSelectTargetFile() {
+      const fileKey = document.getElementById("sel-target-file").value;
+      const tabSelect = document.getElementById("sel-target-tab");
+      tabSelect.innerHTML = `<option value="">-- Đang tải danh sách Tab... --</option>`;
+
+      if (!fileKey) {
+        tabSelect.innerHTML = `<option value="">-- Vui lòng chọn file ở bước 1 trước --</option>`;
+        capNhatTruongThongTinChung();
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}?action=GET_SHEET_TABS&fileKey=${fileKey}`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.tabs)) {
+          tabSelect.innerHTML = data.tabs.map(t => `<option value="${t}">${t}</option>`).join('');
+          capNhatTruongThongTinChung();
+        } else {
+          tabSelect.innerHTML = `<option value="">Không lấy được Tab: ${data.message}</option>`;
+        }
+      } catch (err) {
+        tabSelect.innerHTML = `<option value="">Lỗi kết nối tải Tab!</option>`;
+      }
+    }
+
+    function handleSmartExcelUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      document.getElementById("smart-file-name").innerText = `Đã chọn: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const data = new Uint8Array(evt.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rawRows = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: "" });
+
+          if (!rawRows || rawRows.length === 0) {
+            return Swal.fire("Lỗi", "File Excel không có dữ liệu!", "error");
+          }
+
+          let headerRowIndex = -1;
+          for (let r = 0; r < Math.min(15, rawRows.length); r++) {
+            const rowUpper = rawRows[r].map(c => String(c).trim().toUpperCase());
+            if (rowUpper.some(cell => cell.includes("MSSV") || cell.includes("MÃ SV") || cell.includes("MASV"))) {
+              headerRowIndex = r;
+              break;
+            }
+          }
+
+          let colMssv = 0;
+          let colVaiTro = 1;
+          let startRow = 0;
+
+          if (headerRowIndex !== -1) {
+            const headers = rawRows[headerRowIndex].map(h => String(h).trim().toUpperCase().replace(/[\s_\-.]/g, ''));
+            colMssv = headers.findIndex(h => h.includes("MSSV") || h.includes("MASV"));
+            colVaiTro = headers.findIndex(h => h.includes("VAITRO") || h.includes("CHUCVU") || h.includes("NHIEMVU"));
+            if (colVaiTro === -1) colVaiTro = headers.findIndex(h => h.includes("VAI"));
+            startRow = headerRowIndex + 1;
+          } else {
+            startRow = (String(rawRows[0][0]).toUpperCase().includes("MSSV")) ? 1 : 0;
+            colMssv = 0;
+            colVaiTro = 1;
+          }
+
+          smartParsedRows = [];
+          for (let r = startRow; r < rawRows.length; r++) {
+            const row = rawRows[r];
+            if (!row || row.length === 0) continue;
+
+            const mssvVal = colMssv !== -1 ? String(row[colMssv] || "").trim() : "";
+            const vaiTroVal = (colVaiTro !== -1 && row[colVaiTro] !== undefined) ? String(row[colVaiTro]).trim() : "";
+
+            if (mssvVal.includes("DANH SÁCH") || mssvVal.includes("TỔNG") || mssvVal.includes("*")) continue;
+
+            if (mssvVal) {
+              smartParsedRows.push({
+                mssv: mssvVal,
+                vaiTro: vaiTroVal || ""
+              });
+            }
+          }
+
+          Swal.fire({
+            icon: "success",
+            title: "Đã đọc xong danh sách!",
+            text: `Tìm thấy ${smartParsedRows.length} sinh viên hợp lệ từ file.`,
+            timer: 1500,
+            showConfirmButton: false
+          });
+
+        } catch (err) {
+          Swal.fire("Lỗi file", "Không thể phân tích file Excel: " + err.message, "error");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    async function xacNhanImportSmart() {
+      const fileKey = document.getElementById("sel-target-file").value;
+      const tabName = document.getElementById("sel-target-tab").value;
+
+      if (!fileKey || !tabName) {
+        return Swal.fire("Thiếu thông tin", "Vui lòng chọn File đích và Tab muốn import!", "warning");
+      }
+      if (!smartParsedRows || smartParsedRows.length === 0) {
+        return Swal.fire("Thiếu file", "Vui lòng tải lên file Excel chứa danh sách MSSV!", "warning");
+      }
+
+      const rawDrl = document.getElementById("com_muc_drl").value.trim();
+      const cleanMucDrl = rawDrl.replace(/,/g, '.');
+
+      const commonPayload = {
+        tenChuongTrinh: document.getElementById("com_ten_ct").value.trim(),
+        thoiGian: document.getElementById("com_thoi_gian").value.trim(),
+        mucDrl: cleanMucDrl || "3.1",
+        nam: document.getElementById("com_nam") ? document.getElementById("com_nam").value.trim() : new Date().getFullYear(),
+        namHocGcn: document.getElementById("com_nam_hoc_gcn") ? document.getElementById("com_nam_hoc_gcn").value.trim() : "2025 - 2026",
+        donViToChuc: document.getElementById("com_don_vi_to_chuc") ? document.getElementById("com_don_vi_to_chuc").value.trim() : "Đoàn Thanh niên - Hội Sinh viên Đại học Y Dược TPHCM",
+        tenDonVi: document.getElementById("com_ten_don_vi") ? document.getElementById("com_ten_don_vi").value.trim() : "",
+        hocKi: document.getElementById("com_hoc_ki") ? document.getElementById("com_hoc_ki").value.trim() : "1",
+        namHocClb: document.getElementById("com_nam_hoc_clb") ? document.getElementById("com_nam_hoc_clb").value.trim() : "2025 - 2026"
+      };
+
+      Swal.fire({
+        title: "Đang nạp dữ liệu...",
+        html: `Đang ghi <b>${smartParsedRows.length}</b> dòng vào tab <b>[${tabName}]</b>. Vui lòng chờ...`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      try {
+        const payload = {
+          action: "IMPORT_DYNAMIC_TAB",
+          fileKey: fileKey,
+          tabName: tabName,
+          commonInfo: commonPayload,
+          items: smartParsedRows
+        };
+
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          Swal.fire({ icon: "success", title: "Thành công!", text: data.message });
+          document.getElementById("input-file-excel-smart").value = "";
+          document.getElementById("smart-file-name").innerText = "Bấm để tải lên file .xlsx hoặc .csv";
+          smartParsedRows = [];
+        } else {
+          Swal.fire("Lỗi ghi dữ liệu", data.message, "error");
+        }
+      } catch (err) {
+        Swal.fire("Lỗi kết nối", err.message, "error");
+      }
+    }
+
+    // Tải danh sách file do CTV gửi về
+    async function loadCtvSubmittedFilesAdmin() {
+      const tbody = document.getElementById("tbody-ctv-files-admin");
+      if (!tbody) return;
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-sky-600"></i> Đang tải danh sách file...</td></tr>`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=GET_CTV_SUBMITTED_FILES`);
+        const data = await res.json();
+
+        if (data.success && data.list && data.list.length > 0) {
+          tbody.innerHTML = data.list.map(f => {
+            let cleanNgay = cleanUpTextFormat(f.ngayToChuc);
+            let cleanDrl = cleanUpTextFormat(f.mucDRL);
+
+            return `
+              <tr class="hover:bg-slate-50 transition">
+                <td class="p-3 text-slate-500 font-mono text-[11px]">${cleanUpTextFormat(f.thoiGianGui)}</td>
+                <td class="p-3">
+                  <b class="text-slate-800">${f.hoTen}</b>
+                  <div class="text-slate-400 text-[10.5px]">MSSV: ${f.mssv}</div>
+                </td>
+                <td class="p-3">
+                  <b class="text-slate-900 block">${f.tenChuongTrinh}</b>
+                  <span class="text-sky-600 text-[11px] font-medium"><i class="fa-regular fa-calendar-check mr-1"></i>Ngày: ${cleanNgay}</span>
+                </td>
+                <td class="p-3 text-center">
+                  <span class="px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg font-black text-xs">
+                    ${cleanDrl}
+                  </span>
+                </td>
+                <td class="p-3 text-center">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${f.trangThai === 'Đã duyệt' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                    ${f.trangThai}
+                  </span>
+                </td>
+                <td class="p-3 text-center space-x-1.5 whitespace-nowrap">
+                  <a href="${f.linkFile}" target="_blank" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-[11px] inline-flex items-center gap-1 shadow-xs transition">
+                    <i class="fa-solid fa-download"></i> Tải File
+                  </a>
+                  ${f.trangThai !== 'Đã duyệt' ? `
+                    <button onclick="capNhatTrangThaiFileAdmin('${f.maYC}', 'Đã duyệt')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-[11px] transition">
+                      Duyệt
+                    </button>
+                  ` : ''}
+                </td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-slate-400">Chưa có file nào do CTV gửi về.</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-rose-500 font-bold">Lỗi tải danh sách file!</td></tr>`;
+      }
+    }
+
+    async function capNhatTrangThaiFileAdmin(maYC, st) {
+      sendPost({ action: "QTV_UPDATE_FILE_STATUS", data: { maYC: maYC, trangThai: st } }, () => {
+        loadCtvSubmittedFilesAdmin();
+      });
+    }
+
+    // =========================================================================
+    // 5. GIAO NHẬN VẬT PHẨM & CHỤP ẢNH TỪ CAMERA
+    // =========================================================================
+    async function loadDonVatPhamAdmin() {
+      const tbody = document.getElementById("tbody-vatpham-admin");
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-emerald-600"></i> Đang tải phiếu mượn vật phẩm...</td></tr>`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=GET_ADMIN_VAT_PHAM`);
+        const data = await res.json();
+        
+        if (data.success && Array.isArray(data.items)) {
+          if (data.items.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Không có đơn mượn vật phẩm nào.</td></tr>`;
+            return;
+          }
+
+          tbody.innerHTML = data.items.map(it => `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-3 font-semibold text-slate-900">${it.tenChuongTrinh}</td>
+              <td class="p-3">
+                <b class="text-slate-800 block">${it.nguoiDaiDien}</b>
+                <span class="text-slate-500 text-[11px] block">Lớp: ${it.lop || '---'} • SĐT: ${it.sdt}</span>
+                ${it.nguoiBanGiao ? `<span class="text-emerald-700 text-[10.5px] block font-medium">Bàn giao: ${it.nguoiBanGiao}</span>` : ''}
+              </td>
+              <td class="p-3 text-[11px] leading-relaxed">
+                <div>Từ: ${it.thoiGianMuon}</div>
+                <div>Đến: ${it.thoiGianTra}</div>
+              </td>
+              <td class="p-3 font-medium text-slate-700">${it.danhSachVatPham}</td>
+              <td class="p-3 text-center">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${it.trangThai === 'Đã trả' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                  ${it.trangThai}
+                </span>
+              </td>
+              <td class="p-3 text-center space-x-1">
+                <button onclick="openCameraCapture('${it.maDon}', 'BAN_GIAO')" class="px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 rounded-lg font-bold text-[10.5px]">
+                  <i class="fa-solid fa-camera mr-1"></i> Chụp ảnh
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi nạp danh sách vật phẩm!'}</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">Lỗi kết nối máy chủ!</td></tr>`;
+      }
+    }
+
+    function openCameraCapture(maDon, type) {
+      activePhotoMaDon = maDon;
+      activePhotoType = type;
+      activePhotoBase64 = "";
+      document.getElementById("camera_input").value = "";
+      document.getElementById("camera_preview_box").classList.add("hidden");
+      toggleModal('modal-camera-vp', true);
+    }
+
+    function previewCapturedImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          activePhotoBase64 = e.target.result;
+          document.getElementById("camera_preview_img").src = e.target.result;
+          document.getElementById("camera_preview_box").classList.remove("hidden");
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    async function uploadCapturedPhoto() {
+      if (!activePhotoBase64) {
+        return Swal.fire("Chưa có ảnh", "Vui lòng chụp ảnh từ camera hoặc tải ảnh lên!", "warning");
+      }
+
+      const btn = document.getElementById("btn-confirm-upload-photo");
+      btn.innerText = "Đang lưu ảnh...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "UPLOAD_VP_IMAGE",
+            data: { maDon: activePhotoMaDon, base64: activePhotoBase64, type: activePhotoType }
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          Swal.fire("Thành công", "Đã lưu ảnh bàn giao vật phẩm lên Google Drive!", "success");
+          toggleModal('modal-camera-vp', false);
+          loadDonVatPhamAdmin();
+        } else {
+          Swal.fire("Lỗi", data.message, "error");
+        }
+      } catch (e) {
+        Swal.fire("Lỗi", "Không thể tải ảnh", "error");
+      } finally {
+        btn.innerText = "Lưu Ảnh Lên Drive";
+        btn.disabled = false;
+      }
+    }
+
+    // =========================================================================
+    // 6. QUẢN LÝ HOẠT ĐỘNG
+    // =========================================================================
+    function openModalTaoHoatDongMoi() {
+      toggleModal('modal-create-activity', true);
+    }
+
+    function themDongViTriTuyen() {
+      const container = document.getElementById("container-vi-tri-tuyen");
+      const div = document.createElement("div");
+      div.className = "flex items-center gap-2 vi-tri-item";
+      div.innerHTML = `
+        <input type="text" placeholder="Tên công việc..." class="flex-1 p-2 bg-white border border-slate-200 rounded-xl font-bold outline-none vt-ten" required>
+        <div class="flex items-center gap-1">
+          <span class="text-slate-500 font-bold text-[11px]">SL:</span>
+          <input type="number" min="1" value="3" class="w-16 p-2 bg-white border border-slate-200 rounded-xl font-bold outline-none text-center vt-sl" required>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl font-bold">&times;</button>
+      `;
+      container.appendChild(div);
+    }
+
+    async function submitTaoHoatDongMoi(e) {
+      e.preventDefault();
+      
+      const viTriElements = document.querySelectorAll(".vi-tri-item");
+      const viTriList = [];
+      viTriElements.forEach(el => {
+        const ten = el.querySelector(".vt-ten").value.trim();
+        const sl = parseInt(el.querySelector(".vt-sl").value) || 1;
+        if (ten) viTriList.push({ ten: ten, soLuong: sl });
+      });
+
+      if (viTriList.length === 0) {
+        return Swal.fire("Thiếu vị trí", "Vui lòng nhập ít nhất 1 vị trí cần tuyển!", "warning");
+      }
+
+      const payload = {
+        action: "QTV_CREATE_ACTIVITY",
+        data: {
+          tieuChi: document.getElementById("act_tieu_chi").value,
+          tenHoatDong: document.getElementById("act_name").value.trim(),
+          thoiGian: document.getElementById("act_thoi_gian").value.trim(),
+          diaDiem: document.getElementById("act_dia_diem").value.trim(),
+          trangPhuc: document.getElementById("act_trang_phuc").value.trim(),
+          quyenLoi: document.getElementById("act_quyen_loi").value.trim(),
+          viTriList: viTriList
+        }
+      };
+
+      const btn = document.getElementById("btn-submit-act");
+      btn.innerText = "Đang lưu vào Google Sheets...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          toggleModal('modal-create-activity', false);
+          e.target.reset();
+          Swal.fire("Thành công", "Đã tạo hoạt động và lưu vào tab HoatDong!", "success");
+          loadHoatDongCTVAdmin();
+        } else {
+          Swal.fire("Lỗi", data.message, "error");
+        }
+      } catch (err) {
+        Swal.fire("Lỗi kết nối", "Không thể gửi dữ liệu lên máy chủ!", "error");
+      } finally {
+        btn.innerText = "XÁC NHẬN TẠO VÀ ĐĂNG HOẠT ĐỘNG";
+        btn.disabled = false;
+      }
+    }
+
+    async function loadHoatDongCTVAdmin() {
+      const container = document.getElementById("container-hoat-dong-list");
+      container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tải dữ liệu hoạt động...</p>`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=GET_DANH_SACH_HOAT_DONG_CTV`);
+        const data = await res.json();
+        if (data.success && data.hoatDongs && data.hoatDongs.length > 0) {
+          loadedHoatDongList = data.hoatDongs;
+          container.innerHTML = data.hoatDongs.map(hd => {
+            const isClosed = hd.trangThai === "CLOSED" || hd.trangThai === "CLOSED_FULL";
+            return `
+              <div class="border border-slate-200 rounded-3xl p-5 bg-white shadow-xs space-y-3.5">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${hd.tieuChi === 'Bắt buộc' ? 'bg-rose-100 text-rose-700' : 'bg-sky-100 text-sky-700'}">
+                        ${hd.tieuChi}
+                      </span>
+                      <b class="text-slate-900 text-sm">${hd.tenHoatDong}</b>
+                      <span class="text-[10px] text-slate-400 font-mono">(${hd.maHD})</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 space-y-0.5 pt-1">
+                      <p>⏰ <b>Thời gian:</b> ${hd.thoiGian}</p>
+                      <p>📍 <b>Địa điểm:</b> ${hd.diaDiem} • 👔 <b>Trang phục:</b> ${hd.trangPhuc}</p>
+                      <p class="text-emerald-700">🎁 <b>Quyền lợi:</b> ${(hd.quyenLoi || "").replace(/\n/g, ", ")}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex sm:flex-col items-end gap-2 shrink-0">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs font-black px-2.5 py-1 rounded-xl ${isClosed ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-800'}">
+                        ${isClosed ? 'Đã đóng đơn' : 'Đang mở nhận đơn'}
+                      </span>
+                      <button onclick="toggleTrangThaiDonAdmin('${hd.maHD}', '${isClosed ? 'OPEN' : 'CLOSED'}')" 
+                              class="px-2.5 py-1 rounded-xl text-xs font-bold transition border ${isClosed ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200'}">
+                        ${isClosed ? '<i class="fa-solid fa-lock-open mr-1"></i> Mở lại' : '<i class="fa-solid fa-lock mr-1"></i> Đóng đơn'}
+                      </button>
+                    </div>
+                    <span class="text-xs font-bold text-slate-600 mt-1">
+                      Sĩ số đã tuyển: <b>${hd.soLuongDaDK} / ${hd.soLuongCanTuyen}</b> CTV
+                    </span>
+                  </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-xs border border-slate-100 rounded-xl overflow-hidden">
+                    <thead class="bg-slate-50/80 text-slate-600 font-bold border-b">
+                      <tr>
+                        <th class="p-2.5 w-12 text-center">STT</th>
+                        <th class="p-2.5">MSSV</th>
+                        <th class="p-2.5">Họ và Tên</th>
+                        <th class="p-2.5">Lớp</th>
+                        <th class="p-2.5">Vị trí</th>
+                        <th class="p-2.5 text-center">Trạng thái tham gia</th>
+                        <th class="p-2.5 text-center">Điểm danh</th>
+                        <th class="p-2.5 text-center w-28">Thao tác QTV</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                      ${hd.danhSachCTV && hd.danhSachCTV.length > 0 ? hd.danhSachCTV.map((c, i) => {
+                        const isChoHuy = c.trangThaiDK === "CHO_HUY";
+                        return `
+                          <tr class="hover:bg-slate-50/60 transition">
+                            <td class="p-2.5 text-center font-bold text-slate-400">${i + 1}</td>
+                            <td class="p-2.5 font-mono font-bold text-slate-800">${c.mssv}</td>
+                            <td class="p-2.5 font-semibold text-slate-800">${c.hoTen}</td>
+                            <td class="p-2.5">${c.lop}</td>
+                            <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-sky-50 text-sky-700 font-bold">${c.viTri || 'Thành viên'}</span></td>
+                            
+                            <td class="p-2.5 text-center">
+                              ${isChoHuy ? `
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200 animate-pulse">
+                                  ⚠️ Xin rút (Chờ duyệt)
+                                </span>
+                              ` : `
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                  Đã đăng ký
+                                </span>
+                              `}
+                            </td>
+
+                            <td class="p-2.5 text-center">
+                              <input type="checkbox" ${c.diemDanh ? 'checked' : ''} onchange="xuLyDiemDanhAdmin('${c.id}', '${hd.maHD}', '${c.mssv}', this.checked)" class="w-4 h-4 rounded text-sky-600 cursor-pointer" ${isChoHuy ? 'disabled' : ''}>
+                            </td>
+
+                            <td class="p-2.5 text-center">
+                              ${isChoHuy ? `
+                                <button onclick="xemLyDoVaDuyetHuy('${hd.maHD}', '${c.mssv}', '${c.hoTen}', \`${c.lyDoHuy || 'Bận việc đột xuất'}\`)" 
+                                        class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-[10.5px] shadow-xs">
+                                  Xem lý do
+                                </button>
+                              ` : `
+                                <button onclick="qtvXoaNhanhCTV('${hd.maHD}', '${c.mssv}', '${c.hoTen}')" 
+                                        class="px-2 py-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded font-medium text-[10.5px]">
+                                  Xóa khỏi HĐ
+                                </button>
+                              `}
+                            </td>
+                          </tr>
+                        `;
+                      }).join('') : `<tr><td colspan="8" class="text-center py-4 text-slate-400 italic">Chưa có CTV nào đăng ký hoạt động này.</td></tr>`}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Chưa có hoạt động nào được tạo.</p>`;
+        }
+      } catch (e) {
+        container.innerHTML = `<p class="text-xs text-rose-500 text-center py-6">Lỗi tải danh sách hoạt động!</p>`;
+      }
+    }
+
+    function xemLyDoVaDuyetHuy(maHD, mssv, hoTen, lyDo) {
+      Swal.fire({
+        title: `<span class="text-sm font-black uppercase text-amber-900">YÊU CẦU XIN RÚT KHỎI HOẠT ĐỘNG</span>`,
+        html: `
+          <div class="text-left text-xs space-y-2.5 p-1 text-slate-700">
+            <p><b>Cộng tác viên:</b> ${hoTen} (<code>${mssv}</code>)</p>
+            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
+              <span class="block font-bold text-amber-950 mb-1">📝 Lý do CTV đưa ra:</span>
+              <p class="italic text-slate-800 leading-relaxed font-medium">"${lyDo}"</p>
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check mr-1"></i> Đồng ý cho rút',
+        denyButtonText: '<i class="fa-solid fa-xmark mr-1"></i> Bác bỏ yêu cầu',
+        cancelButtonText: 'Đóng',
+        confirmButtonColor: '#059669',
+        denyButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          xuLyQTVDuyetHuy(maHD, mssv, true);
+        } else if (result.isDenied) {
+          xuLyQTVDuyetHuy(maHD, mssv, false);
+        }
+      });
+    }
+
+    async function xuLyQTVDuyetHuy(maHD, mssv, dongY) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "QTV_DUYET_HUY_HOAT_DONG",
+            data: { maHD: maHD, mssv: mssv, dongY: dongY }
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          Swal.fire("Thành công", data.message, "success");
+          loadHoatDongCTVAdmin();
+        } else {
+          Swal.fire("Lỗi", data.message, "error");
+        }
+      } catch (e) {
+        Swal.fire("Lỗi kết nối", "Không thể gửi lệnh duyệt!", "error");
+      }
+    }
+
+    async function qtvXoaNhanhCTV(maHD, mssv, hoTen) {
+      const confirm = await Swal.fire({
+        title: "Xác nhận xóa?",
+        text: `Bạn có chắc muốn xóa CTV ${hoTen} khỏi hoạt động này?`,
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Đồng ý",
-        cancelButtonText: "Bỏ qua"
-      }).then(r => {
-        if (r.isConfirmed) {
-          sendPost({ action: "CSVC_ADMIN_ACTION", data: { maDon: maDon, type: "HUY_DUYET", nguoiThucHien: currentUser.hoTen || currentUser.username } }, loadCsvcAdmin);
-        }
+        confirmButtonColor: "#dc2626",
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Đóng"
       });
+      if (confirm.isConfirmed) {
+        xuLyQTVDuyetHuy(maHD, mssv, true);
+      }
     }
 
-    function openCsvcChat(maDon, diaDiem) {
-      Swal.fire({
-        title: `Trao đổi đơn: ${diaDiem}`,
-        input: 'textarea',
-        inputPlaceholder: 'Nhập thông báo gửi đến đơn vị...',
-        showCancelButton: true,
-        confirmButtonText: 'Gửi tin nhắn',
-        cancelButtonText: 'Đóng'
-      }).then(res => {
-        if (res.isConfirmed && res.value) {
-          sendPost({
-            action: "CSVC_ADMIN_ACTION",
-            data: { maDon: maDon, type: "TRAO_DOI", noiDungTraoDoi: res.value.trim(), nguoiThucHien: currentUser.hoTen || currentUser.username }
-          }, () => Swal.fire("Đã gửi!", "Tin nhắn phản hồi đã được lưu vào hệ thống!", "success"));
+    async function toggleTrangThaiDonAdmin(maHD, newStatus) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "QTV_TOGGLE_ACTIVITY_STATUS",
+            data: { maHD: maHD, status: newStatus }
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: data.message,
+            timer: 1300,
+            showConfirmButton: false
+          });
+          loadHoatDongCTVAdmin();
+        } else {
+          Swal.fire("Lỗi", data.message, "error");
         }
-      });
+      } catch (e) {
+        Swal.fire("Lỗi kết nối", "Không thể cập nhật trạng thái đơn!", "error");
+      }
     }
 
-    function updateCsvcStatus(maDon, st) {
-      sendPost({ action: "UPDATE_STATUS_CSVC", data: { maDon: maDon, trangThai: st, nguoiDuyet: currentUser.hoTen || currentUser.username } }, loadCsvcAdmin);
+    async function xuLyDiemDanhAdmin(id, maHD, mssv, isChecked) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "CAP_NHAT_DIEM_DANH_CTV",
+            data: { id: id, maHD: maHD, mssv: mssv, diemDanh: isChecked, type: "DIEM_DANH" }
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadHoatDongCTVAdmin();
+        }
+      } catch (e) {
+        Swal.fire("Lỗi", "Không thể cập nhật điểm danh!", "error");
+      }
     }
 
-    // 3. LỊCH TRỰC CTV
-    async function loadAdminShiftsList() {
-      const picker = document.getElementById("admin-shift-picker");
-      const tbody = document.getElementById("shifts-by-date-table-body");
-      const d = picker.value;
-      if (!d) return;
+    // =========================================================================
+    // 7. XẾP LOẠI CTV, LỌC BAN & XUẤT EXCEL
+    // =========================================================================
+    let loadedCTVList = [];
 
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Đang nạp danh sách trực ngày ${d}...</td></tr>`;
+    async function loadDanhSachCTVAdmin() {
+      const tbody = document.getElementById("tbody-ctv-admin");
+      if (!tbody) return;
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-rose-500"></i> Đang nạp danh sách CTV từ Google Sheets...</td></tr>`;
 
       try {
-        const res = await fetch(`${API_URL}?action=GET_ALL_SHIFTS_BY_DATE&date=${encodeURIComponent(d)}`);
+        const res = await fetch(`${API_URL}?action=GET_ALL_CTV_ACCOUNTS`);
         const data = await res.json();
-        if (!data.success || !data.shifts.length) {
-          return tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Không có CTV nào đăng ký trực vào ngày ${d}!</td></tr>`;
+        
+        if (data.success && Array.isArray(data.list)) {
+          loadedCTVList = data.list;
+          if (loadedCTVList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Chưa có dữ liệu CTV nào trong sheet HoSo_CTV.</td></tr>`;
+            return;
+          }
+          locDanhSachCTVTheoBan();
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi nạp danh sách CTV!'}</td></tr>`;
         }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">Lỗi kết nối máy chủ (${e.message})!</td></tr>`;
+      }
+    }
 
-        tbody.innerHTML = data.shifts.map(s => `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-3 font-bold">${s.hoTen}</td>
-            <td class="p-3 font-mono text-[11px] text-slate-500">${s.lop} (${s.username})</td>
-            <td class="p-3 font-semibold text-sky-700">${s.gioBatDau} - ${s.gioKetThuc}</td>
-            <td class="p-3 text-center font-mono text-[11px]">Vào: ${s.checkIn}<br>Ra: ${s.checkOut}</td>
-            <td class="p-3 text-center font-black">${s.soCa} ca</td>
-            <td class="p-3 text-center">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.canhBao ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">
-                ${s.canhBao || s.trangThai}
+    function renderCTVTable(list) {
+      const tbody = document.getElementById("tbody-ctv-admin");
+      if (!tbody) return;
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Không có CTV nào phù hợp bộ lọc.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((c, idx) => {
+        const hd = c.hoatDong || { tongHD: 0, batBuoc: 0, tuChon: 0, ds: [] };
+
+        return `
+          <tr class="hover:bg-rose-50/50 transition cursor-pointer" onclick="xemChiTietCTV('${c.mssv}')">
+            <td class="p-3 text-center font-bold text-slate-400 whitespace-nowrap">${idx + 1}</td>
+            <td class="p-3 font-mono font-bold text-slate-800 whitespace-nowrap">${c.mssv}</td>
+            <td class="p-3">
+              <b class="text-slate-900 block text-xs hover:text-sky-600 transition whitespace-nowrap">${c.hoTen}</b>
+              <span class="text-[11px] text-slate-500 block mt-0.5 whitespace-nowrap">Lớp: ${c.lop || '---'} ${c.ngaySinh ? `• NS: ${c.ngaySinh}` : ''}</span>
+            </td>
+            <td class="p-3 whitespace-nowrap">
+              <span class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-100 text-[11px] font-bold inline-block">
+                ${c.ban || 'Ban Nhân sự'}
               </span>
             </td>
-          </tr>
-        `).join('');
-      } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">Lỗi nạp danh sách ca trực!</td></tr>`; }
-    }
+            
+            <td class="p-3 text-center whitespace-nowrap">
+              <div class="inline-flex flex-col items-center leading-tight">
+                <span class="px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-800 font-black text-xs border border-amber-200">
+                  ${c.soCaTruc || 0} ca
+                </span>
+                <span class="text-[10px] text-slate-400 font-semibold mt-0.5">
+                  (${c.tongGioTruc || 0} giờ)
+                </span>
+              </div>
+            </td>
 
-    async function loadTodayAttendance() {
-      const tbody = document.getElementById("today-att-body");
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400">Đang tải...</td></tr>`;
-      try {
-        const res = await fetch(`${API_URL}?action=GET_ATTENDANCE_TODAY`);
-        const data = await res.json();
-        if (!data.success || !data.list.length) return tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-400">Hôm nay chưa có lượt điểm danh.</td></tr>`;
+            <td class="p-3 text-center whitespace-nowrap">
+              <div class="inline-flex flex-col items-center gap-1 leading-tight">
+                <span class="px-2.5 py-0.5 rounded bg-sky-50 text-sky-700 font-bold border border-sky-200 text-[10.5px]">
+                  Bắt buộc: <b>${hd.batBuoc || 0}</b>
+                </span>
+                <span class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 text-[10.5px]">
+                  Tự chọn: <b>${hd.tuChon || 0}</b>
+                </span>
+              </div>
+            </td>
 
-        tbody.innerHTML = data.list.map(a => `
-          <tr class="hover:bg-slate-50">
-            <td class="p-2.5 font-bold">${a.hoTen} (${a.lop})</td>
-            <td class="p-2.5">${a.gioDK}</td>
-            <td class="p-2.5 text-center font-mono font-bold text-sky-700">${a.checkIn}</td>
-            <td class="p-2.5 text-center font-mono font-bold text-amber-700">${a.checkOut}</td>
-            <td class="p-2.5 text-center font-black">${a.soCa} ca</td>
-            <td class="p-2.5 text-center">${a.canhBao ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">${a.canhBao}</span>` : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">${a.trangThai}</span>`}</td>
-          </tr>
-        `).join('');
-      } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-rose-500">Lỗi!</td></tr>`; }
-    }
-
-    // 4. TIẾP NHẬN DỮ LIỆU IMPORT TỪ CTV
-    async function loadImportedDataLogs() {
-      const tbody = document.getElementById("import-logs-body");
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Đang tải lịch sử import...</td></tr>`;
-
-      try {
-        const res = await fetch(`${API_URL}?action=GET_IMPORTED_DATA_LOGS`);
-        const data = await res.json();
-        if (!data.success || !data.logs.length) {
-          return tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Chưa có đợt import dữ liệu nào từ CTV!</td></tr>`;
-        }
-        loadedImportLogs = data.logs;
-
-        tbody.innerHTML = loadedImportLogs.map(l => `
-          <tr class="hover:bg-slate-50">
-            <td class="p-3 font-mono font-bold text-sky-800">${l.maBatch}</td>
-            <td class="p-3 text-[11px] text-slate-500 font-mono">${l.thoiGian}</td>
-            <td class="p-3 font-bold">${l.nguoiGui}</td>
-            <td class="p-3 font-semibold text-sky-950">${l.tenChuongTrinh}</td>
-            <td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-700">${l.tieuChi || '1.1'}</span></td>
-            <td class="p-3 text-center font-black text-emerald-600">${l.soLuong} SV</td>
-            <td class="p-3 text-center">
-              <div class="flex items-center justify-center gap-1.5">
-                <button onclick="viewBatchDetail('${l.maBatch}')" class="px-2.5 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-lg font-bold text-[11px] hover:bg-sky-100">Xem DS</button>
-                <button onclick="exportBatchExcel('${l.maBatch}')" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg font-bold text-[11px] hover:bg-emerald-700">Xuất Excel</button>
+            <td class="p-3 text-center whitespace-nowrap" onclick="event.stopPropagation()">
+              <div class="inline-flex items-center justify-center gap-1.5">
+                <select onchange="capNhatXepLoaiCTV('${c.mssv}', this.value)" class="p-1.5 border border-slate-200 rounded-xl text-xs font-bold bg-white outline-none focus:border-rose-400 cursor-pointer shadow-xs">
+                  <option value="Thành viên hoàn thành xuất sắc" ${c.xepLoai === 'Thành viên hoàn thành xuất sắc' ? 'selected' : ''}>Hoàn thành xuất sắc</option>
+                  <option value="Thành viên hoàn thành" ${c.xepLoai === 'Thành viên hoàn thành' ? 'selected' : ''}>Hoàn thành</option>
+                  <option value="Chưa hoàn thành" ${c.xepLoai === 'Chưa hoàn thành' || !c.xepLoai ? 'selected' : ''}>Chưa hoàn thành</option>
+                </select>
+                <span class="text-emerald-600 text-xs font-bold w-12 text-left" id="saved-status-${c.mssv}"></span>
               </div>
             </td>
           </tr>
-        `).join('');
-      } catch(e) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500">Lỗi tải dữ liệu!</td></tr>`; }
+        `;
+      }).join('');
     }
 
-    function viewBatchDetail(maBatch) {
-      const log = loadedImportLogs.find(l => l.maBatch === maBatch);
-      if (!log) return;
-      let list = [];
-      try { list = JSON.parse(log.chiTietJSON); } catch(e) {}
+    function xemChiTietCTV(mssv) {
+      const c = loadedCTVList.find(x => x.mssv === mssv);
+      if (!c) return;
 
-      const html = `
-        <div class="max-h-72 overflow-y-auto text-left text-xs">
-          <p class="mb-2 text-slate-500">Chương trình: <b class="text-slate-800">${log.tenChuongTrinh}</b> (Tiêu chí: <b>${log.tieuChi}</b>) | CTV: <b class="text-sky-700">${log.nguoiGui}</b></p>
-          <table class="w-full border-collapse">
-            <thead class="bg-slate-50 font-bold border-b">
-              <tr><th class="p-2">MSSV</th><th class="p-2">Họ Và Tên</th><th class="p-2">Lớp</th><th class="p-2">Vai trò</th></tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              ${list.map(s => `
-                <tr>
-                  <td class="p-2 font-mono font-bold">${s.mssv}</td>
-                  <td class="p-2">${s.hoTen}</td>
-                  <td class="p-2">${s.lop || ''}</td>
-                  <td class="p-2 text-sky-700 font-medium">${s.viTri || 'Tham gia'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-      Swal.fire({ title: `Đợt Import: ${maBatch}`, html: html, width: '600px', showConfirmButton: true, confirmButtonText: "Đóng" });
-    }
-
-    function exportBatchExcel(maBatch) {
-      const log = loadedImportLogs.find(l => l.maBatch === maBatch);
-      if (!log) return;
-      let list = [];
-      try { list = JSON.parse(log.chiTietJSON); } catch(e) {}
-      if (!list.length) return Swal.fire("Trống", "Không có dữ liệu!", "info");
-
-      const exportRows = list.map(s => ({
-        "Mã Đợt": log.maBatch,
-        "Chương Trình": log.tenChuongTrinh,
-        "Tiêu Chí": log.tieuChi,
-        "MSSV": s.mssv,
-        "Họ Và Tên": s.hoTen,
-        "Lớp": s.lop || "",
-        "Vai Trò": s.viTri || "Tham gia",
-        "Người Import": log.nguoiGui,
-        "Thời Gian": log.thoiGian
-      }));
-      const ws = XLSX.utils.json_to_sheet(exportRows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "DanhSachSinhVien");
-      XLSX.writeFile(wb, `DS_ThamGia_${log.tenChuongTrinh.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`);
-    }
-
-    // 5. VẬT PHẨM, XẾP LOẠI, HOẠT ĐỘNG
-    async function loadVatPhamOrdersAdmin() {
-      const tbody = document.getElementById("vp-admin-body");
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Đang đồng bộ...</td></tr>`;
-      try {
-        const res = await fetch(`${API_URL}?action=GET_ORDERS_VAT_PHAM`);
-        const data = await res.json();
-        if (!data.success || !data.orders.length) return tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Chưa có đơn!</td></tr>`;
-
-        tbody.innerHTML = data.orders.map(o => `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-3 font-mono font-bold">${o.maDon}</td>
-            <td class="p-3"><b>${o.tenChuongTrinh}</b><br><span class="text-[10px] text-slate-400">${o.nguoiMuon} - ${o.sdt}</span></td>
-            <td class="p-3 font-semibold text-slate-700 leading-relaxed">${o.danhSachVatPham}</td>
-            <td class="p-3 text-[11px] text-slate-500">${o.thoiGianMuon}<br>${o.thoiGianTra}</td>
-            <td class="p-3 text-center"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">${o.trangThai}</span></td>
-            <td class="p-3 text-center">
-              ${o.trangThai === 'Chờ nhận' ? `<button onclick="updateVpAdmin('${o.maDon}', 'Đang mượn')" class="px-2.5 py-1 bg-sky-500 text-white rounded-xl text-[11px] font-bold">Bàn giao</button>` : (o.trangThai === 'Đang mượn' ? `<button onclick="updateVpAdmin('${o.maDon}', 'Đã trả')" class="px-2.5 py-1 bg-emerald-600 text-white rounded-xl text-[11px] font-bold">Thu hồi</button>` : '<span class="text-slate-400">Đã xong</span>')}
-            </td>
-          </tr>
-        `).join('');
-      } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">Lỗi nạp đơn!</td></tr>`; }
-    }
-
-    async function updateVpAdmin(ma, st) {
-      sendPost({ action: "UPDATE_STATUS_VAT_PHAM", data: { maDon: ma, trangThai: st, nguoiThucHien: currentUser.hoTen || currentUser.username } }, loadVatPhamOrdersAdmin);
-    }
-
-    async function loadEvaluationTable() {
-      const tbody = document.getElementById("eval-table-body");
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Đang nạp dữ liệu...</td></tr>`;
-      try {
-        const res = await fetch(`${API_URL}?action=GET_CTV_EVAL_LIST`);
-        const data = await res.json();
-        if (!data.success || !data.list.length) return tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Chưa có dữ liệu CTV!</td></tr>`;
-
-        tbody.innerHTML = data.list.map(c => `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-3 font-bold">${c.hoTen} (${c.lop})</td>
-            <td class="p-3 text-center"><b>${c.totalShifts} ca</b> (${c.totalHours}h)</td>
-            <td class="p-3 text-rose-700">${c.dsBatBuoc.length ? c.dsBatBuoc.join(', ') : '---'}</td>
-            <td class="p-3 text-sky-700">${c.dsTuChon.length ? c.dsTuChon.join(', ') : '---'}</td>
-            <td class="p-3 text-center">
-              <select id="rk-${c.username}" class="p-1 border rounded-lg text-xs font-bold">
-                <option value="">-- Xếp loại --</option>
-                <option value="Hoàn thành xuất sắc" ${c.xepLoaiHienTai === 'Hoàn thành xuất sắc' ? 'selected' : ''}>Hoàn thành xuất sắc</option>
-                <option value="Hoàn thành tốt" ${c.xepLoaiHienTai === 'Hoàn thành tốt' ? 'selected' : ''}>Hoàn thành tốt</option>
-                <option value="Chưa hoàn thành" ${c.xepLoaiHienTai === 'Chưa hoàn thành' ? 'selected' : ''}>Chưa hoàn thành</option>
-              </select>
-            </td>
-            <td class="p-3 text-center">
-              <button onclick="saveRankCTV('${c.username}')" class="px-2.5 py-1 bg-sky-500 text-white rounded-lg text-xs font-bold">Lưu</button>
-            </td>
-          </tr>
-        `).join('');
-      } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">Lỗi kết nối!</td></tr>`; }
-    }
-
-    async function saveRankCTV(u) {
-      const val = document.getElementById(`rk-${u}`).value;
-      if (!val) return Swal.fire("Chưa chọn", "Vui lòng chọn xếp loại!", "warning");
-      sendPost({ action: "QTV_SAVE_RANK", data: { username: u, xepLoai: val } }, () => {
-        Swal.fire({ icon: "success", title: "Đã lưu!", timer: 1200, showConfirmButton: false });
-      });
-    }
-
-    async function submitNewActivity(e) {
-      e.preventDefault();
-      sendPost({
-        action: "QTV_CREATE_ACTIVITY",
-        data: {
-          tenHoatDong: document.getElementById("act_name").value.trim(),
-          loaiTieuChi: document.getElementById("act_type").value.trim(),
-          thoiGianToChuc: document.getElementById("act_time").value.trim(),
-          diaDiem: document.getElementById("act_loc").value.trim(),
-          viTriTuyen: document.getElementById("act_positions").value.trim()
-        }
-      }, () => {
-        e.target.reset();
-        loadAdminActivities();
-        Swal.fire("Thành công", "Đã tạo hoạt động mới!", "success");
-      });
-    }
-
-    async function loadAdminActivities() {
-      const box = document.getElementById("admin-act-list");
-      box.innerHTML = `<p class="text-slate-400 text-center py-6 text-xs">Đang tải...</p>`;
-      try {
-        const res = await fetch(`${API_URL}?action=GET_ACTIVITIES`);
-        const data = await res.json();
-        if (!data.success || !data.activities.length) return box.innerHTML = `<p class="text-slate-400 text-center py-6 text-xs">Chưa có hoạt động!</p>`;
-
-        box.innerHTML = data.activities.map(a => `
-          <div class="p-4 rounded-2xl border border-slate-200 bg-white shadow-xs flex justify-between items-center gap-3">
-            <div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">${a.loaiTieuChi}</span>
-              <b class="text-xs text-slate-800 ml-1">${a.tenHoatDong}</b>
-              <p class="text-[11px] text-slate-500 mt-1">📍 ${a.diaDiem} | ⏰ ${a.thoiGianToChuc}</p>
+      const hd = c.hoatDong || { ds: [], batBuoc: 0, tuChon: 0 };
+      const danhSachHDHtml = hd.ds && hd.ds.length > 0 
+        ? hd.ds.map((item, idx) => `
+            <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between text-xs">
+              <div>
+                <span class="font-bold text-slate-800">${idx + 1}. ${item.ten}</span>
+                <span class="block text-[10.5px] text-slate-400 mt-0.5">Phân loại: <b class="${item.loai.includes('bắt buộc') ? 'text-sky-600' : 'text-emerald-600'}">${item.loai}</b></span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.diemDanh ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}">
+                ${item.diemDanh ? 'Đã tham gia' : 'Đăng ký'}
+              </span>
             </div>
-            <button onclick="toggleActStatus('${a.maHD}', '${a.trangThai === 'OPEN' ? 'CLOSED' : 'OPEN'}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border ${a.trangThai === 'OPEN' ? 'text-rose-600 border-rose-200' : 'text-emerald-600 border-emerald-200'}">
-              ${a.trangThai === 'OPEN' ? 'Đóng đơn' : 'Mở đơn'}
-            </button>
+          `).join('')
+        : `<p class="text-xs text-slate-400 text-center py-3 italic">Chưa đăng ký hoạt động nào.</p>`;
+
+      Swal.fire({
+        title: `<div class="text-left"><span class="text-sm font-black uppercase text-rose-950 block">HỒ SƠ CỘNG TÁC VIÊN</span><span class="text-xs font-semibold text-slate-400">MSSV: ${c.mssv}</span></div>`,
+        html: `
+          <div class="text-left space-y-3.5 pt-2 max-h-[70vh] overflow-y-auto">
+            <div class="bg-rose-50/50 p-3.5 rounded-2xl border border-rose-100 text-xs space-y-1.5 text-slate-700">
+              <p><b>Họ và Tên:</b> <span class="text-slate-900 font-bold">${c.hoTen}</span></p>
+              <div class="grid grid-cols-2 gap-2">
+                <p><b>Lớp:</b> ${c.lop || '---'}</p>
+                <p><b>Ngành:</b> ${c.nganh || '---'}</p>
+                <p><b>Ngày sinh:</b> ${c.ngaySinh || '---'}</p>
+                <p><b>Số điện thoại:</b> ${c.sdt || '---'}</p>
+              </div>
+              <p><b>Email:</b> ${c.email || '---'}</p>
+              <p><b>Ban chuyên môn:</b> <span class="font-bold text-rose-700">${c.ban}</span></p>
+              <p><b>Địa chỉ:</b> ${c.diaChi || 'Chưa cập nhật'}</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-center text-xs">
+              <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+                <span class="text-[10px] text-amber-800 uppercase font-black block">Tổng trực VP</span>
+                <b class="text-sm text-amber-950 font-black">${c.soCaTruc || 0} ca</b>
+                <span class="text-[10px] text-slate-400 block font-medium">(${c.tongGioTruc || 0} giờ)</span>
+              </div>
+              <div class="p-2.5 bg-sky-50 rounded-xl border border-sky-200">
+                <span class="text-[10px] text-sky-800 uppercase font-black block">Hoạt động tham gia</span>
+                <b class="text-sm text-sky-950 font-black">${(hd.batBuoc || 0) + (hd.tuChon || 0)} HĐ</b>
+                <span class="text-[10px] text-slate-400 block font-medium">${hd.batBuoc || 0} bắt buộc • ${hd.tuChon || 0} tự chọn</span>
+              </div>
+            </div>
+
+            <div>
+              <span class="block font-black text-slate-700 text-xs mb-1.5 uppercase">Chi tiết các hoạt động đã đăng ký:</span>
+              <div class="space-y-1.5">
+                ${danhSachHDHtml}
+              </div>
+            </div>
           </div>
-        `).join('');
-      } catch(e) { box.innerHTML = `<p class="text-rose-500 text-center py-6 text-xs">Lỗi!</p>`; }
+        `,
+        width: '560px',
+        confirmButtonText: 'Đóng',
+        confirmButtonColor: '#e11d48'
+      });
     }
 
-    async function toggleActStatus(maHD, st) {
-      sendPost({ action: "QTV_TOGGLE_ACTIVITY", data: { maHD: maHD, trangThai: st } }, loadAdminActivities);
+    function locDanhSachCTVTheoBan() {
+      const selectedBan = document.getElementById("filter-ban-ctv").value;
+      if (selectedBan === "ALL") {
+        renderCTVTable(loadedCTVList);
+      } else {
+        renderCTVTable(loadedCTVList.filter(c => c.ban === selectedBan));
+      }
+    }
+
+    async function capNhatXepLoaiCTV(mssv, newVal) {
+      const statusEl = document.getElementById(`saved-status-${mssv}`);
+      if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-slate-400"></i>`;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "UPDATE_XEP_LOAI_CTV",
+            data: { mssv: mssv, xepLoai: newVal }
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          const item = loadedCTVList.find(x => x.mssv === mssv);
+          if (item) item.xepLoai = newVal;
+          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> Đã lưu`;
+          setTimeout(() => { if (statusEl) statusEl.innerText = ""; }, 2000);
+        } else {
+          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i> Lỗi`;
+        }
+      } catch (e) {
+        if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i> Lỗi`;
+      }
+    }
+
+    function xuatExcelXepLoaiCTV() {
+      const filtered = loadedCTVList.filter(c => c.xepLoai && c.xepLoai.includes("hoàn thành"));
+      if (filtered.length === 0) {
+        return Swal.fire("Thông báo", "Không có CTV nào đạt mức hoàn thành nhiệm vụ để xuất file!", "info");
+      }
+      const exportData = filtered.map((c, i) => ({
+        "STT": i + 1,
+        "MSSV": c.mssv,
+        "Họ và Tên": c.hoTen,
+        "Ngày sinh": c.ngaySinh || "",
+        "Lớp": c.lop || "",
+        "Ban chuyên môn": c.ban || "",
+        "Vai trò / Xếp loại": c.xepLoai
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "DanhSach_CTV_XepLoai");
+      XLSX.writeFile(wb, "DanhSach_CTV_HoanThanhNhiemVu.xlsx");
+    }
+
+    function openModalProfile() {
+      let u = {};
+      try { u = JSON.parse(localStorage.getItem("ump_admin_user")) || {}; } catch(e){}
+      document.getElementById("prof_hoten").value = u.hoTen || "Vũ Nhật Tân";
+      document.getElementById("prof_sdt").value = u.sdt || "09xxxxxxx";
+      document.getElementById("prof_lop").value = u.lop || "BTV";
+      toggleModal('modal-profile', true);
+    }
+
+    function saveProfileAdmin(e) {
+      e.preventDefault();
+      let u = {};
+      try { u = JSON.parse(localStorage.getItem("ump_admin_user")) || {}; } catch(e){}
+      u.hoTen = document.getElementById("prof_hoten").value.trim();
+      u.sdt = document.getElementById("prof_sdt").value.trim();
+      u.lop = document.getElementById("prof_lop").value.trim();
+      localStorage.setItem("ump_admin_user", JSON.stringify(u));
+      document.getElementById("admin-display-name").innerText = `${u.hoTen} (${u.lop})`;
+      document.getElementById("user-footer-name").innerText = u.hoTen;
+      toggleModal('modal-profile', false);
+      Swal.fire("Đã lưu", "Đã cập nhật thông tin cá nhân quản trị viên!", "success");
+    }
+
+    function toggleDangKyTuDo() {
+      const btn = document.getElementById("btn-toggle-dktudo");
+      if (btn.innerText === "BẬT") {
+        btn.innerText = "TẮT";
+        btn.className = "px-2.5 py-1 bg-slate-400 text-white rounded-lg text-[10px] font-black transition";
+        Swal.fire("Đã khóa", "Đã tắt chức năng CTV đăng ký tự do!", "info");
+      } else {
+        btn.innerText = "BẬT";
+        btn.className = "px-2.5 py-1 bg-emerald-500 text-white rounded-lg text-[10px] font-black transition";
+        Swal.fire("Đã mở", "Đã mở chức năng CTV đăng ký tự do!", "success");
+      }
+    }
+
+    function toggleAdminPassModal(show) {
+      Swal.fire("Đổi mật khẩu", "Chức năng đổi mật khẩu quản trị viên", "info");
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem("ump_admin_user");
+      window.location.href = "index.html";
     }
 
     async function sendPost(payload, cb) {
@@ -974,29 +2247,134 @@
       } catch(e) { Swal.fire("Lỗi kết nối", "Không thể gửi dữ liệu!", "error"); }
     }
 
-    function toggleGlobalRegister() {
-      globalAllowRegister = !globalAllowRegister;
-      sendPost({ action: "QTV_TOGGLE_GLOBAL_REGISTER", data: { allowRegister: globalAllowRegister } }, () => {
-        const lbl = document.getElementById("label-reg-toggle");
-        const btn = document.getElementById("btn-toggle-reg");
-        if (globalAllowRegister) {
-          lbl.innerText = "BẬT";
-          lbl.className = "text-emerald-600 font-black";
-          btn.innerText = "Khóa đăng ký";
-        } else {
-          lbl.innerText = "TẮT";
-          lbl.className = "text-rose-600 font-black";
-          btn.innerText = "Mở đăng ký";
-        }
-      });
+    // =========================================================================
+    // XỬ LÝ CHUÔNG THÔNG BÁO QUẢN TRỊ VIÊN
+    // =========================================================================
+    function toggleSystemNotificationDropdown() {
+      const drop = document.getElementById("sys-noti-dropdown");
+      if (drop) drop.classList.toggle("hidden");
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
-      const now = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      document.getElementById("filter-bc-month").value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
-      switchAdminTab('baocao');
+    document.addEventListener("click", (e) => {
+      const bell = document.getElementById("btn-noti-bell-shared");
+      const drop = document.getElementById("sys-noti-dropdown");
+      if (drop && bell && !bell.contains(e.target) && !drop.contains(e.target)) {
+        drop.classList.add("hidden");
+      }
     });
+
+    async function fetchSystemNotifications() {
+      try {
+        const res = await fetch(`${API_URL}?action=GET_APP_NOTIFICATIONS&role=ADMIN&username=admin`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.list)) {
+          cachedSysNotis = data.list;
+          renderSystemNotificationUI();
+        }
+      } catch (err) {
+        console.warn("Chưa tải được thông báo:", err);
+      }
+    }
+
+    function filterNotiByType(type) {
+      currentNotiFilter = type;
+      ['ALL', 'UNREAD', 'CSVC'].forEach(t => {
+        const btn = document.getElementById(`btn-noti-filter-${t}`);
+        if (btn) {
+          if (t === type) {
+            btn.className = "flex-1 py-1 rounded-lg bg-white text-sky-700 shadow-xs font-black";
+          } else {
+            btn.className = "flex-1 py-1 rounded-lg text-slate-500 hover:text-slate-800 font-bold";
+          }
+        }
+      });
+      renderSystemNotificationUI();
+    }
+
+    function cleanUpTextFormat(text) {
+      if (!text) return "";
+      let str = String(text);
+      str = str.replace(/[A-Za-z]{3}\s+[A-Za-z]{3}\s+(\d{1,2})\s+\d{4}\s+00:00:00\s+GMT\+0700\s+\([^)]+\)/g, (match, day) => {
+        if (match.includes("Jan")) return `${parseInt(day)}.1`;
+        if (match.includes("Feb")) return `${parseInt(day)}.2`;
+        return `${parseInt(day)}.1`;
+      });
+      str = str.replace(/[A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT\+0700\s+\([^)]+\)/g, (match) => {
+        const d = new Date(match);
+        if (!isNaN(d.getTime())) {
+          const pad = n => String(n).padStart(2, '0');
+          return `${pad(d.getHours())}:${pad(d.getMinutes())} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+        }
+        return match;
+      });
+      return str;
+    }
+
+    function renderSystemNotificationUI() {
+      const badge = document.getElementById("sys-noti-badge");
+      const listEl = document.getElementById("sys-noti-list");
+      if (!listEl) return;
+
+      const readIds = JSON.parse(localStorage.getItem("read_sys_notis_admin") || "[]");
+      const unreadCount = cachedSysNotis.filter(n => !readIds.includes(n.id)).length;
+
+      if (badge) {
+        if (unreadCount > 0) {
+          badge.innerText = unreadCount > 9 ? "9+" : unreadCount;
+          badge.classList.remove("hidden");
+        } else {
+          badge.classList.add("hidden");
+        }
+      }
+
+      let displayList = cachedSysNotis;
+      if (currentNotiFilter === "UNREAD") {
+        displayList = displayList.filter(n => !readIds.includes(n.id));
+      } else if (currentNotiFilter === "CSVC") {
+        displayList = displayList.filter(n => n.loai === "CSVC");
+      }
+
+      if (displayList.length === 0) {
+        listEl.innerHTML = `<p class="text-center py-6 text-slate-400 italic">Không có thông báo nào trong mục này.</p>`;
+        return;
+      }
+
+      listEl.innerHTML = displayList.map(n => {
+        const isRead = readIds.includes(n.id);
+        return `
+          <div onclick="handleClickSysNoti('${n.id}', '${n.dichDen}', '${n.maRef}')" class="p-2.5 rounded-2xl cursor-pointer transition ${isRead ? 'bg-white hover:bg-slate-50 opacity-75' : 'bg-sky-50/80 border border-sky-100 hover:bg-sky-100/60'}">
+            <div class="flex justify-between items-start gap-1">
+              <span class="font-bold text-slate-800 text-[11.5px]">${n.tieuDe}</span>
+              <span class="text-[10px] text-slate-400 whitespace-nowrap">${cleanUpTextFormat(n.thoiGian)}</span>
+            </div>
+            <p class="text-slate-600 text-[11px] mt-1 leading-relaxed">${cleanUpTextFormat(n.noiDung)}</p>
+            <div class="flex justify-end mt-1 text-[10px] text-sky-600 font-bold hover:underline">
+              Xử lý ngay &rarr;
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleClickSysNoti(notiId, dichDen, maRef) {
+      const readIds = JSON.parse(localStorage.getItem("read_sys_notis_admin") || "[]");
+      if (!readIds.includes(notiId)) {
+        readIds.push(notiId);
+        localStorage.setItem("read_sys_notis_admin", JSON.stringify(readIds));
+        renderSystemNotificationUI();
+      }
+
+      document.getElementById("sys-noti-dropdown").classList.add("hidden");
+      if (typeof switchAdminTab === "function" && dichDen) {
+        switchAdminTab(dichDen);
+      }
+    }
+
+    function markAllSysNotisRead() {
+      const allIds = cachedSysNotis.map(n => n.id);
+      localStorage.setItem("read_sys_notis_admin", JSON.stringify(allIds));
+      renderSystemNotificationUI();
+    }
   </script>
 </body>
 </html>
