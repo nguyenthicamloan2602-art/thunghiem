@@ -37,13 +37,19 @@
     }
   </style>
 </head>
-<body class="bg-mesh min-h-screen flex text-slate-800 select-none">
+<body class="bg-mesh min-h-screen flex flex-col lg:flex-row text-slate-800 select-none">
+
+  <!-- OVERLAY MỜ TRÊN ĐIỆN THOẠI -->
+  <div id="sidebar-overlay" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
 
   <!-- SIDEBAR DỌC CTV -->
-  <aside class="w-64 bg-white/95 border-r border-slate-200/90 flex flex-col justify-between p-4 sticky top-0 h-screen shadow-sm z-40 overflow-y-auto">
+  <aside id="sidebar-ctv" class="fixed inset-y-0 left-0 z-50 w-64 bg-white/95 border-r border-slate-200/90 flex flex-col justify-between p-4 shadow-2xl lg:shadow-sm transform -translate-x-full lg:translate-x-0 transition-transform duration-200 lg:static lg:h-screen overflow-y-auto shrink-0">
     <div class="space-y-5">
-      <div class="px-2 pt-1">
+      <div class="px-2 pt-1 flex justify-between items-center">
         <img alt="Logo Đoàn Hội UMP" class="h-12 w-auto object-contain drop-shadow-sm" src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/f/f7/Logo_Đại_học_Y_Dược_TP.HCM.png'">
+        <button onclick="toggleMobileSidebar(false)" class="lg:hidden p-1.5 text-slate-400 hover:text-slate-700 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
       </div>
 
       <nav class="space-y-1 text-xs font-bold">
@@ -103,11 +109,16 @@
   <!-- MAIN VIEW CTV -->
   <main class="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto z-10">
     
-    <!-- TOPBAR GÓC PHẢI CHỨA CHUÔNG THÔNG BÁO CHO CTV -->
-    <div class="flex justify-between items-center bg-white/80 backdrop-blur-md p-3.5 px-6 rounded-2xl border border-slate-200/80 shadow-xs mb-2">
-      <div>
-        <span class="text-xs font-black text-slate-800 uppercase tracking-tight">CỔNG THÔNG TIN CỘNG TÁC VIÊN</span>
-        <span class="text-[10px] text-sky-600 block font-bold">VĂN PHÒNG ĐOÀN - HỘI ĐH Y DƯỢC TPHCM</span>
+    <!-- TOPBAR GÓC PHẢI CHỨA CHUÔNG THÔNG BÁO CHO CTV VÀ NÚT MENU MOBILE -->
+    <div class="flex justify-between items-center bg-white/90 backdrop-blur-md p-3.5 px-4 sm:px-6 rounded-2xl border border-slate-200/80 shadow-xs mb-2">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleMobileSidebar(true)" class="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+          <i class="fa-solid fa-bars text-sm"></i>
+        </button>
+        <div>
+          <span class="text-xs font-black text-slate-800 uppercase tracking-tight">CỔNG THÔNG TIN CỘNG TÁC VIÊN</span>
+          <span class="text-[10px] text-sky-600 block font-bold">VĂN PHÒNG ĐOÀN - HỘI ĐH Y DƯỢC TPHCM</span>
+        </div>
       </div>
 
       <div class="relative">
@@ -484,6 +495,7 @@
     }
 
     function switchCtvTab(tab) {
+      toggleMobileSidebar(false);
       ['ca-truc', 'quan-ly-data', 'ban-giao', 'tong-hop-bc', 'hoat-dong'].forEach(t => {
         const sec = document.getElementById(`view-ctv-${t === 'tong-hop-bc' ? 'baocao' : (t === 'ca-truc' ? 'catruc' : (t === 'ban-giao' ? 'bangiao' : (t === 'quan-ly-data' ? 'quanlydata' : 'hoatdong')))}`);
         if (sec) sec.classList.add("hidden");
@@ -594,42 +606,87 @@
       return "DEV_" + Math.abs(hash);
     }
 
+    // Bật/tắt thanh menu trên thiết bị di động
+    function toggleMobileSidebar(show) {
+      const sidebar = document.getElementById("sidebar-ctv");
+      const overlay = document.getElementById("sidebar-overlay");
+      if (!sidebar) return;
+      if (show) {
+        sidebar.classList.remove("-translate-x-full");
+        if (overlay) overlay.classList.remove("hidden");
+      } else {
+        sidebar.classList.add("-translate-x-full");
+        if (overlay) overlay.classList.add("hidden");
+      }
+    }
+
+    // Quét QR Camera siêu nhạy, chống treo mạng trong Zalo/iOS
     function startCameraScanner() {
       const box = document.getElementById("qr-camera-box");
-      box.innerHTML = `<div id="scanner-stream" class="w-full"></div>`;
+      box.innerHTML = `<div id="scanner-stream" class="w-full min-h-[220px]"></div>`;
+
+      if (scannerQrObj) {
+        try { scannerQrObj.stop(); } catch(e){}
+      }
 
       scannerQrObj = new Html5Qrcode("scanner-stream");
+      const qrboxFn = function(viewfinderWidth, viewfinderHeight) {
+        const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.75);
+        return { width: edge, height: edge };
+      };
+
       scannerQrObj.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: 200 },
+        { fps: 15, qrbox: qrboxFn },
         async (decodedText) => {
-          scannerQrObj.stop();
-          Swal.fire({ title: "Đang xác thực...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          try { scannerQrObj.stop(); } catch(e){}
+          
+          Swal.fire({ 
+            title: "Đang xác thực mã QR...", 
+            text: "Vui lòng giữ nguyên màn hình...",
+            allowOutsideClick: false, 
+            didOpen: () => Swal.showLoading() 
+          });
 
+          // Lấy IP với Timeout 500ms chống treo khi chạy trong trình duyệt Zalo / iOS
           let userIP = "Unknown";
           try {
-            const ipRes = await fetch("https://api.ipify.org?format=json");
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 600);
+            const ipRes = await fetch("https://api.ipify.org?format=json", { signal: controller.signal });
+            clearTimeout(timeoutId);
             const ipData = await ipRes.json();
-            userIP = ipData.ip;
-          } catch(e) {}
+            userIP = ipData.ip || "Unknown";
+          } catch(e) {
+            userIP = "MobileClient";
+          }
 
-          const checkinType = document.querySelector('input[name="qr_type"]:checked').value;
+          const checkinType = document.querySelector('input[name="qr_type"]:checked') ? document.querySelector('input[name="qr_type"]:checked').value : "IN";
 
           sendPost({
             action: "CHECKIN_CTV_SECURE",
             data: {
               username: currentUser.username,
               type: checkinType,
-              qrToken: decodedText,
+              qrToken: decodedText.trim(),
               ip: userIP,
               deviceId: getDeviceFingerprint()
             }
-          }, () => {
+          }, (res) => {
             loadCtvShiftStats();
+            Swal.fire({
+              icon: "success",
+              title: "Điểm Danh Thành Công!",
+              text: res.message || `Đã ghi nhận ${checkinType === 'IN' ? 'vào ca' : 'ra ca'} của bạn!`,
+              confirmButtonColor: "#0284c7"
+            });
+            box.innerHTML = `<div class="p-4 text-center text-xs text-emerald-600 font-bold"><i class="fa-solid fa-circle-check text-2xl mb-1 block"></i> Điểm danh hoàn tất! Bấm nút dưới để quét tiếp nếu cần.</div>`;
           });
         },
         () => {}
-      ).catch(() => Swal.fire("Lỗi Camera", "Không thể mở camera trên thiết bị!", "error"));
+      ).catch((err) => {
+        Swal.fire("Lỗi Camera", "Không thể khởi động camera. Vui lòng cấp quyền truy cập Camera trên trình duyệt điện thoại!", "error");
+      });
     }
 
     // 3. QUẢN LÝ DỮ LIỆU & IMPORT
