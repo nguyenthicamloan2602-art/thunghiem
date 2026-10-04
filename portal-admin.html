@@ -763,11 +763,15 @@
     window.addEventListener("DOMContentLoaded", () => {
       try {
         const u = JSON.parse(localStorage.getItem("ump_admin_user"));
-        if (u && u.hoTen) {
-          const nameEl = document.getElementById("admin-display-name");
+        if (u && (u.hoTen || u.username)) {
           const footerEl = document.getElementById("user-footer-name");
-          if (nameEl) nameEl.innerText = `${u.hoTen} (${u.lop || 'BTV'})`;
-          if (footerEl) footerEl.innerText = u.hoTen;
+          const nameEl = document.getElementById("admin-display-name");
+
+          // 1. Dòng trên: Hiển thị Họ và tên
+          if (footerEl) footerEl.innerText = u.hoTen || u.username;
+
+          // 2. Dòng dưới: Chỉ hiển thị Chức vụ / Ban (không lặp lại tên)
+          if (nameEl) nameEl.innerText = u.lop || "Ban Điều hành";
         }
       } catch(e) {}
 
