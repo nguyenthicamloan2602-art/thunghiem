@@ -600,11 +600,14 @@
     }
 
     // ĐĂNG NHẬP
+    // ĐĂNG NHẬP
     async function handleLogin(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       const btn = document.getElementById("btn-login");
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sm"></i> Đang xác thực...`;
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sm"></i> Đang xác thực...`;
+      }
 
       const username = document.getElementById("log_user").value.trim();
       const password = document.getElementById("log_pass").value.trim();
@@ -620,36 +623,38 @@
         });
 
         const data = await res.json();
-        if (data.success) {
+        if (data.success && data.user) {
+          // Lưu đồng thời cả 2 khóa để tương thích cả CTV, User và QTV Admin
           localStorage.setItem("ump_user", JSON.stringify(data.user));
+          localStorage.setItem("ump_admin_user", JSON.stringify(data.user));
           
-          Swal.fire({
+          await Swal.fire({
             icon: 'success',
             title: 'Đăng nhập thành công',
             text: `Chào mừng ${data.user.hoTen || data.user.tenDonVi || data.user.username}!`,
-            timer: 1100,
+            timer: 1000,
             showConfirmButton: false
           });
 
-          setTimeout(() => {
-            const role = String(data.user.role || "").toUpperCase();
-            if (role.includes("ADMIN")) {
-              window.location.href = "portal-admin.html";
-            } else if (role.includes("CTV")) {
-              window.location.href = "portal-ctv.html";
-            } else {
-              window.location.href = "portal-user.html";
-            }
-          }, 1100);
+          const role = String(data.user.role || "").toUpperCase();
+          if (role.includes("ADMIN") || role.includes("QTV")) {
+            window.location.replace("portal-admin.html");
+          } else if (role.includes("CTV")) {
+            window.location.replace("portal-ctv.html");
+          } else {
+            window.location.replace("portal-user.html");
+          }
 
         } else {
           Swal.fire("Đăng nhập thất bại", data.message || "Tài khoản hoặc mật khẩu không chính xác!", "error");
         }
       } catch (err) {
-        Swal.fire("Lỗi kết nối", "Không thể kết nối máy chủ API! Hãy kiểm tra config.js", "error");
+        Swal.fire("Lỗi kết nối", "Không thể kết nối máy chủ API! Vui lòng kiểm tra lại đường link trong config.js.", "error");
       } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<span>Đăng nhập hệ thống</span> <i class="fa-solid fa-arrow-right text-xs"></i>`;
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<span>Đăng nhập hệ thống</span> <i class="fa-solid fa-arrow-right text-xs"></i>`;
+        }
       }
     }
 
