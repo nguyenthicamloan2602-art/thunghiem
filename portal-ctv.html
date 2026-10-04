@@ -43,7 +43,7 @@
       box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.05);
     }
 
-    /* Hiệu ứng nạp dữ liệu mượt mà */
+    /* Hiệu ứng tải dữ liệu mượt mà */
     .loading-pulse {
       display: inline-flex;
       align-items: center;
@@ -384,14 +384,14 @@
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-purple-100 pb-3">
           <div>
             <h2 class="font-extrabold text-sm text-purple-950 uppercase flex items-center gap-2">
-              <i class="fa-solid fa-chart-pie text-purple-600"></i> Báo Cáo Hoạt Động Tháng Đơn Vị Cơ Sở
+              <i class="fa-solid fa-chart-pie text-purple-600"></i> BÁO CÁO THÁNG
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Theo dõi tiến độ nộp báo cáo và chạy AI biên tập mẫu Word tổng hợp</p>
+            <p class="text-xs text-slate-400 mt-0.5">Kiểm tra, chỉnh sửa và tổng hợp báo cáo</p>
           </div>
           <div class="flex items-center gap-2">
             <!-- NÚT AI TỔNG HỢP WORD GIỐNG QTV -->
             <button onclick="openModalAiBaoCaoCTV()" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> AI Tổng Hợp Mẫu Word
+              <i class="fa-solid fa-wand-magic-sparkles"></i> TỔNG HỢP BÁO CÁO
             </button>
             <button onclick="loadReports()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
               Làm mới
@@ -436,8 +436,8 @@
     <!-- 5. ĐĂNG KÝ HOẠT ĐỘNG -->
     <div id="view-ctv-hoatdong" class="hidden space-y-4">
       <div>
-        <h1 class="text-base font-black text-slate-800 uppercase">Hoạt Động &amp; Tuyển BTC</h1>
-        <p class="text-xs text-slate-400">Xem và đăng ký các vị trí công việc theo nhu cầu.</p>
+        <h1 class="text-base font-black text-slate-800 uppercase">ĐĂNG KÝ HOẠT ĐỘNG</h1>
+        <p class="text-xs text-slate-400">Xem và đăng ký các hoạt động/chương trình theo yêu cầu.</p>
       </div>
       <div id="activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </div>
@@ -450,7 +450,7 @@
             <h1 class="text-base font-black text-slate-800 uppercase flex items-center gap-2">
               <i class="fa-solid fa-address-book text-emerald-600"></i> Danh Bạ Thành Viên Văn Phòng
             </h1>
-            <p class="text-xs text-slate-400 mt-0.5">Tra cứu thông tin liên hệ của Ban Quản trị và các bạn Cộng tác viên Văn phòng</p>
+            <p class="text-xs text-slate-400 mt-0.5">Tra cứu thông tin liên hệ của Ban Điều hành và các bạn Cộng tác viên Văn phòng</p>
           </div>
           <div class="flex items-center gap-2">
             <input type="text" id="search-danh-ba-ctv" oninput="timKiemDanhBaCTV(this.value)" placeholder="Tìm theo tên, lớp, SĐT..." class="px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-medium outline-none bg-slate-50 focus:bg-white focus:border-sky-500">
@@ -602,7 +602,7 @@
       const activeBtn = document.getElementById(map[tab]);
       if (activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-sky-600 text-white shadow-md shadow-sky-600/20 transition font-bold [&>i]:text-white";
 
-      // 3. Kích hoạt view và nạp dữ liệu tương ứng
+      // 3. Kích hoạt view và tải dữ liệu tương ứng
       if (tab === 'ca-truc') {
         document.getElementById("view-ctv-catruc").classList.remove("hidden");
         loadCtvShiftStats();
@@ -864,7 +864,7 @@
     let activePhotoType = "BAN_GIAO";
     let activePhotoBase64 = "";
 
-    // Nạp danh sách đơn mượn vật phẩm (Đã sửa data.items và đồng bộ giống QTV)
+    // tải danh sách đơn mượn vật phẩm (Đã sửa data.items và đồng bộ giống QTV)
     async function loadVatPhamOrders() {
       const tbody = document.getElementById("table-vp-body");
       tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-emerald-600"></i> Đang đồng bộ phiếu mượn...</td></tr>`;
@@ -917,7 +917,7 @@
           </tr>
         `).join('');
       } catch(e) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">Lỗi nạp đơn vật phẩm!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">Lỗi tải đơn vật phẩm!</td></tr>`;
       }
     }
 
@@ -1294,7 +1294,7 @@
           `;
         }).join('');
       } catch(e) {
-        box.innerHTML = `<p class="text-rose-500 text-center col-span-3 py-8 text-xs">Lỗi nạp hoạt động!</p>`;
+        box.innerHTML = `<p class="text-rose-500 text-center col-span-3 py-8 text-xs">Lỗi tải hoạt động!</p>`;
       }
     }
 
@@ -1355,7 +1355,7 @@
     }
 
         // Hàm gọi đăng ký hoạt động
-        // Hàm đăng ký hoạt động: Có khóa nút chống bấm đúp và tự động nạp lại giao diện
+        // Hàm đăng ký hoạt động: Có khóa nút chống bấm đúp và tự động tải lại giao diện
     async function applyActivity(maHD) {
       const posSelect = document.getElementById(`pos-${maHD}`);
       const pos = posSelect ? posSelect.value : "Thành viên";
