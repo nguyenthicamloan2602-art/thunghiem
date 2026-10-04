@@ -142,7 +142,7 @@
                 BÁO CÁO HOẠT ĐỘNG THÁNG CƠ SỞ ĐOÀN - HỘI
               </h3>
               <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
-                <i class="fa-regular fa-clock text-amber-500"></i> Hoàn tất báo cáo trước: <span id="brief-deadline-time" class="font-semibold text-rose-500">17:00 ngày 15 hàng tháng</span>
+                <i class="fa-regular fa-clock text-amber-500"></i> Hoàn tất báo cáo trước: <span id="brief-deadline-time" class="font-semibold text-rose-500">17:00 ngày 20 hàng tháng</span>
               </p>
             </div>
 
@@ -270,15 +270,15 @@
               </div>
 
               <div class="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label class="block font-bold text-slate-700 mb-1">Tên đăng nhập (MSSV) <span class="text-rose-500">*</span></label>
-                  <input class="input-field w-full px-3.5 py-2.5 rounded-xl font-semibold text-slate-800" id="reg_user" placeholder="VD: 511246372" required type="text">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Số điện thoại <span class="text-rose-500">*</span></label>
+                    <input class="input-field w-full px-3 py-2 rounded-xl font-medium" id="reg_sdt" placeholder="VD: 0912345678" type="tel" required>
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Ngày sinh <span class="text-rose-500">*</span></label>
+                    <input class="input-field w-full px-3 py-2 rounded-xl font-medium" id="reg_dob" type="date" required>
+                  </div>
                 </div>
-                <div>
-                  <label class="block font-bold text-slate-700 mb-1">Mật khẩu <span class="text-rose-500">*</span></label>
-                  <input class="input-field w-full px-3.5 py-2.5 rounded-xl text-slate-800" id="reg_pass" placeholder="••••••••" required type="password">
-                </div>
-              </div>
 
               <div>
                 <label class="block font-bold text-slate-700 mb-1">Vai trò sử dụng <span class="text-rose-500">*</span></label>
@@ -443,36 +443,33 @@
       document.getElementById("label-today").innerText = `HÔM NAY • ${todayStr}`;
       document.getElementById("label-tomorrow").innerText = `NGÀY MAI • ${tomorrowStr}`;
 
-      // TÍNH LỊCH BÁO CÁO NGÀY 15 VÀ KIỂM TRA ĐIỀU KIỆN TỪ NGÀY 10 ĐẾN 15
+      // TÍNH LỊCH BÁO CÁO NGÀY 20 VÀ KIỂM TRA ĐIỀU KIỆN TỪ NGÀY 15 ĐẾN 20
       const currentDay = today.getDate();
       let deadlineMonth = today.getMonth() + 1;
       let deadlineYear = today.getFullYear();
 
-      // Nếu hôm nay đã qua ngày 15 thì tính hạn là ngày 15 tháng kế tiếp
-      if (currentDay > 15) {
+      // Nếu hôm nay đã qua ngày 20 thì tính hạn là ngày 20 tháng kế tiếp
+      if (currentDay > 20) {
         deadlineMonth += 1;
         if (deadlineMonth > 12) {
           deadlineMonth = 1;
           deadlineYear += 1;
         }
       }
-      const deadlineStr = `15/${pad(deadlineMonth)}/${deadlineYear}`;
+      const deadlineStr = `20/${pad(deadlineMonth)}/${deadlineYear}`;
       const elDeadline = document.getElementById("brief-deadline-date");
       if (elDeadline) elDeadline.innerHTML = `<i class="fa-regular fa-clock text-rose-400"></i> ${deadlineStr}`;
 
       const elDeadlineTime = document.getElementById("brief-deadline-time");
-      if (elDeadlineTime) elDeadlineTime.innerText = "17:00 ngày 15 hàng tháng";
+      if (elDeadlineTime) elDeadlineTime.innerText = "17:00 ngày 20 hàng tháng";
 
-      // KIỂM TRA ĐIỀU KIỆN HIỂN THỊ TAG ĐỎ:
-      // Tag đỏ KHẨN / SẮP HẾT HẠN chỉ kích hoạt từ ngày 10 đến ngày 15 của tháng báo cáo
+      // Tag đỏ KHẨN / SẮP HẾT HẠN kích hoạt từ ngày 15 đến ngày 20 của tháng báo cáo
       const elBadgeUrgent = document.getElementById("badge-deadline-urgent");
       if (elBadgeUrgent) {
-        if (currentDay >= 10 && currentDay <= 15) {
-          // Giai đoạn cao điểm từ ngày 10 đến 15: Hiện màu đỏ Khẩn cấp
+        if (currentDay >= 15 && currentDay <= 20) {
           elBadgeUrgent.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200";
           elBadgeUrgent.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1 text-[9px]"></i> KHẨN / SẮP HẾT HẠN`;
         } else {
-          // Các ngày còn lại: Chuyển sang tag thông báo kế hoạch bình thường (xanh biển êm dịu)
           elBadgeUrgent.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-sky-50 text-sky-700 border border-sky-200";
           elBadgeUrgent.innerHTML = `<i class="fa-regular fa-calendar-check mr-1 text-[9px]"></i> THÔNG TIN BÁO CÁO`;
         }
@@ -681,6 +678,7 @@
           nganh: role === "CTV" ? document.getElementById("reg_khoa").value : "",
           lop: role === "CTV" ? document.getElementById("reg_lop").value.trim() : "",
           ngaySinh: role === "CTV" ? document.getElementById("reg_dob").value : ""
+          sdt: role === "CTV" ? document.getElementById("reg_sdt").value.trim() : "",
         }
       };
 

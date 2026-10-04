@@ -15,14 +15,20 @@
 
   <style>
     * {
-      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
       box-sizing: border-box;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+
+    body, button, input, select, textarea, p, span, h1, h2, h3, h4, h5, h6, table, th, td, label, div, a {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Đảm bảo FontAwesome luôn giữ đúng font biểu tượng, không bị ô chữ nhật */
     .fa, .fas, .far, .fa-solid, .fa-regular, .fa-brands, [class*="fa-"] {
       font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
     }
+
     .bg-mesh {
       background-color: #f8fafc;
       background-image: 
@@ -49,6 +55,21 @@
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+
+    /* Hiệu ứng mượt mà khi dữ liệu đang tải */
+    .loading-pulse {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #64748b;
+      animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .45; }
+    }
   </style>
 </head>
 <body class="bg-mesh min-h-screen flex flex-col justify-between text-slate-800 relative selection:bg-sky-500 selection:text-white select-none">
@@ -61,15 +82,15 @@
         <img alt="Logo UMP" class="h-10 sm:h-12 w-auto object-contain shrink-0 drop-shadow-sm cursor-pointer" src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/f/f7/Logo_Đại_học_Y_Dược_TP.HCM.png'">
         <div class="h-7 w-[2px] bg-sky-500 rounded-full hidden sm:block"></div>
         <div>
-          <h1 class="font-extrabold text-xs md:text-sm tracking-tight text-slate-800 uppercase">BÀN ĐIỀU HÀNH QUẢN TRỊ | ĐOÀN - HỘI UMP</h1>
-          <p class="text-[10.5px] text-sky-600 font-bold uppercase">HỆ THỐNG XÉT DUYỆT & QUẢN TRỊ HOẠT ĐỘNG TỔNG THỂ</p>
+          <h1 class="font-extrabold text-xs md:text-sm tracking-tight text-slate-800 uppercase">BAN QUẢN LÝ CÔNG TÁC QUẢN TRỊ SỐ</h1>
+          <p class="text-[10.5px] text-sky-600 font-bold uppercase">ĐOÀN - HỘI ĐẠI HỌC Y DƯỢC TP. HỒ CHÍ MINH</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2.5">
         <div class="hidden sm:flex items-center gap-2 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-100">
           <i class="fa-solid fa-user-shield text-xs text-sky-600"></i>
-          <span id="admin-display-name" class="text-xs font-bold text-slate-700">Vũ Nhật Tân (Ban Thường vụ)</span>
+          <span id="admin-display-name" class="text-xs font-bold text-slate-700">Vũ Nhật Tân (Ban Quản trị)</span>
         </div>
         
         <button onclick="toggleAdminPassModal(true)" class="px-3 py-1.5 bg-white hover:bg-sky-50 text-sky-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-sm">
@@ -120,42 +141,35 @@
       <!-- SIDEBAR TRÁI -->
       <aside class="w-full lg:w-64 space-y-4 shrink-0">
         <div class="glass-card rounded-[28px] p-3 space-y-1.5">
-          <!-- 1. Báo cáo tháng -->
-          <button onclick="switchAdminTab('tab-baocao')" id="nav-tab-baocao" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
-            <span class="flex items-center gap-2.5"><i class="fa-solid fa-file-shield text-purple-600 w-4 text-center"></i> Báo Cáo Tháng</span>
-            <span id="badge-nav-bc" class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded-full font-black">Mới</span>
-          </button>
-
-          <!-- 2. Duyệt CSVC (Active mặc định) -->
+          <!-- 1. Duyệt CSVC (Active mặc định) -->
           <button onclick="switchAdminTab('tab-csvc')" id="nav-tab-csvc" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-black text-xs flex items-center justify-between transition bg-sky-600 text-white shadow-md shadow-sky-600/20">
             <span class="flex items-center gap-2.5"><i class="fa-solid fa-building-circle-check w-4 text-center"></i> Duyệt CSVC</span>
             <span id="badge-nav-csvc" class="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full">0</span>
           </button>
-
-          <!-- 3. Lịch trực CTV -->
-          <button onclick="switchAdminTab('tab-lich-truc')" id="nav-tab-lich-truc" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
-            <span class="flex items-center gap-2.5"><i class="fa-solid fa-calendar-days text-amber-500 w-4 text-center"></i> Lịch Trực CTV</span>
+          <!-- 2. Báo cáo tháng -->
+          <button onclick="switchAdminTab('tab-baocao')" id="nav-tab-baocao" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-file-shield text-purple-600 w-4 text-center"></i> Báo Cáo Tháng</span>
           </button>
-
-          <!-- 4. Dữ liệu Import (QTV) -->
-          <button onclick="switchAdminTab('tab-import-data')" id="nav-tab-import-data" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
-            <span class="flex items-center gap-2.5"><i class="fa-solid fa-file-import text-indigo-600 w-4 text-center"></i> Dữ Liệu Import (QTV)</span>
-          </button>
-
-          <!-- 5. Bàn giao Vật Phẩm -->
+          <!-- 3. Bàn giao Vật Phẩm -->
           <button onclick="switchAdminTab('tab-vat-pham')" id="nav-tab-vat-pham" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
-            <span class="flex items-center gap-2.5"><i class="fa-solid fa-boxes-stacked text-emerald-600 w-4 text-center"></i> Bàn Giao Vật Phẩm</span>
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-boxes-stacked text-emerald-600 w-4 text-center"></i> Quản lý Vật Phẩm</span>
+          </button>        
+          <!-- 4. Lịch trực CTV -->
+          <button onclick="switchAdminTab('tab-lich-truc')" id="nav-tab-lich-truc" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-calendar-days text-amber-500 w-4 text-center"></i> Quản lý trực </span>
           </button>
-
-          <!-- 6. Xếp loại CTV -->
-          <button onclick="switchAdminTab('tab-xep-loai')" id="nav-tab-xep-loai" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
-            <span class="flex items-center gap-2.5"><i class="fa-solid fa-award text-rose-500 w-4 text-center"></i> Xếp Loại CTV</span>
-          </button>
-
-          <!-- 7. Quản lý hoạt động -->
+          <!-- 5. Quản lý hoạt động -->
           <button onclick="switchAdminTab('tab-hoat-dong')" id="nav-tab-hoat-dong" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
             <span class="flex items-center gap-2.5"><i class="fa-solid fa-bullhorn text-sky-500 w-4 text-center"></i> Quản Lý Hoạt Động</span>
           </button>
+          <!-- 6. Dữ liệu Import (QTV) -->
+          <button onclick="switchAdminTab('tab-import-data')" id="nav-tab-import-data" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-file-import text-indigo-600 w-4 text-center"></i> Cơ sở dữ liệu </span>
+          </button>
+          <!-- 7. Xếp loại CTV -->
+          <button onclick="switchAdminTab('tab-xep-loai')" id="nav-tab-xep-loai" class="w-full text-left px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center justify-between transition bg-white text-slate-600 hover:bg-slate-50">
+            <span class="flex items-center gap-2.5"><i class="fa-solid fa-award text-rose-500 w-4 text-center"></i> Xếp Loại Đội</span>
+          </button>  
         </div>
 
         <!-- TÍNH NĂNG MỞ RỘNG (KHÓA) -->
@@ -163,16 +177,16 @@
           <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider block px-1">TÍNH NĂNG MỞ RỘNG</span>
           <div class="space-y-1 text-xs text-slate-500 font-bold">
             <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/60 border border-slate-100">
-              <span><i class="fa-solid fa-folder-tree text-slate-400 mr-2"></i> Sổ Văn Bản Đi/Đến</span>
-              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">KHÓA</span>
+              <span><i class="fa-solid fa-folder-tree text-slate-400 mr-2"></i> SỔ VĂN BẢN</span>
+              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">SẮP RA MẮT</span>
             </div>
             <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/60 border border-slate-100">
-              <span><i class="fa-solid fa-file-invoice-dollar text-slate-400 mr-2"></i> Quyết Toán & Dự Toán</span>
-              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">AI</span>
+              <span><i class="fa-solid fa-file-invoice-dollar text-slate-400 mr-2"></i> HỒ SƠ THANH TOÁN </span>
+              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">SẮP RA MẮT</span>
             </div>
             <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/60 border border-slate-100">
-              <span><i class="fa-solid fa-users-gear text-slate-400 mr-2"></i> Quản Lý Cơ Sở</span>
-              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">KHÓA</span>
+              <span><i class="fa-solid fa-users-gear text-slate-400 mr-2"></i> DANH BẠ CƠ SỞ </span>
+              <span class="text-[9px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">SẮP RA MẮT</span>
             </div>
           </div>
         </div>
@@ -189,7 +203,7 @@
           <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
             <div>
               <b class="text-xs text-slate-800 block" id="user-footer-name">Vũ Nhật Tân</b>
-              <span class="text-[10px] text-slate-400 block font-semibold">BAN THƯỜNG VỤ</span>
+              <span class="text-[10px] text-slate-400 block font-semibold">BAN QUẢN TRỊ</span>
             </div>
             <button onclick="openModalProfile()" class="text-[11px] text-sky-600 font-bold hover:underline">
               Cập nhật
@@ -211,11 +225,11 @@
                 <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
                   <i class="fa-solid fa-building text-sky-600"></i> Phê Duyệt Cơ Sở Vật Chất
                 </h2>
-                <p class="text-[11px] text-slate-400 mt-0.5">Click vào dòng đơn để xem chi tiết hoặc tick nhiều dòng để xuất công văn tổng hợp</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Chọn vào mỗi yêu cầu để xem chi tiết hoặc chọn nhiều yêu cầu để xuất công văn tổng hợp</p>
               </div>
               <div class="flex items-center gap-2">
                 <button onclick="xuatCongVanTongHopMulti()" class="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition">
-                  <i class="fa-solid fa-file-word"></i> Xuất Công Văn Word Tổng Hợp (<span id="count-selected-csvc">0</span>)
+                  <i class="fa-solid fa-file-word"></i> Xuất Công Văn (<span id="count-selected-csvc">0</span>)
                 </button>
                 <button onclick="loadCsvcDataAdmin()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
                   Làm mới
@@ -238,7 +252,7 @@
                   </tr>
                 </thead>
                 <tbody id="tbody-csvc-admin" class="divide-y divide-slate-100 bg-white">
-                  <tr><td colspan="7" class="text-center py-6 text-slate-400">Đang nạp danh sách CSVC...</td></tr>
+                  <tr><td colspan="7" class="text-center py-6 text-slate-400">Đang tải danh sách CSVC...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -253,35 +267,35 @@
             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-purple-100 pb-3">
               <div>
                 <h2 class="font-extrabold text-sm text-purple-950 uppercase flex items-center gap-2">
-                  <i class="fa-solid fa-calendar-check text-purple-600"></i> Quản Lý Mở / Khóa Đợt Nộp Báo Cáo
+                  <i class="fa-solid fa-calendar-check text-purple-600"></i> CHẾ ĐỘ THÔNG TIN BÁO CÁO
                 </h2>
-                <p class="text-xs text-slate-500 mt-0.5">Nhập kỳ tháng bất kỳ để mở hoặc khóa đợt nộp báo cáo cho cơ sở:</p>
+                <p class="text-xs text-slate-500 mt-0.5">Mở khóa tháng cần báo cáo, sau thời gian ngày 20 hằng tháng kiểm tra và đóng báo cáo.</p>
               </div>
               <div class="flex items-center gap-2">
                 <button onclick="openModalAiBaoCao()" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition">
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> AI Tổng Hợp Báo Cáo Mẫu Word
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> TỔNG HỢP BÁO CÁO
                 </button>
               </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-2 bg-purple-50/60 p-3 rounded-2xl border border-purple-100">
-              <span class="text-xs font-bold text-purple-950">Mở/khóa kỳ tháng mới:</span>
+              <span class="text-xs font-bold text-purple-950">Thời gian báo cáo:</span>
               <input type="month" id="admin_new_month_input" value="2026-11" class="p-1.5 border border-purple-200 rounded-xl text-xs font-bold bg-white outline-none">
               <button onclick="themVaDoiTrangThaiThang(true)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition">
-                <i class="fa-solid fa-lock-open mr-1"></i> MỞ THÁNG NÀY
+                <i class="fa-solid fa-lock-open mr-1"></i> MỞ ĐƠN
               </button>
               <button onclick="themVaDoiTrangThaiThang(false)" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition">
-                <i class="fa-solid fa-lock mr-1"></i> KHÓA LẠI
+                <i class="fa-solid fa-lock mr-1"></i> KHÓA ĐƠN
               </button>
             </div>
 
             <div id="container-months-admin" class="flex flex-wrap gap-2 pt-2">
-              <span class="text-xs text-slate-400">Đang nạp trạng thái các kỳ tháng...</span>
+              <span class="text-xs text-slate-400">Đang tải...</span>
             </div>
           </div>
 
           <div class="glass-card rounded-[28px] p-5 space-y-3">
-            <h3 class="font-black text-xs text-purple-900 uppercase">Danh Sách Báo Cáo Đơn Vị Gửi Về</h3>
+            <h3 class="font-black text-xs text-purple-900 uppercase">Danh Sách các Đơn vị đã báo cáo</h3>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs border border-purple-100 rounded-xl overflow-hidden min-w-[700px]">
                 <thead class="bg-purple-50 text-purple-950 font-bold border-b border-purple-100 whitespace-nowrap">
@@ -310,9 +324,9 @@
             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-3">
               <div>
                 <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
-                  <i class="fa-solid fa-calendar-days text-amber-500"></i> Lịch Trực & Điểm Danh Ca Trực CTV
+                  <i class="fa-solid fa-calendar-days text-amber-500"></i> QUẢN LÝ CA TRỰC
                 </h2>
-                <p class="text-xs text-slate-400 mt-0.5">Chọn ngày bất kỳ để xem danh sách CTV đăng ký ca trực và trạng thái điểm danh vào/ra ca</p>
+                <p class="text-xs text-slate-400 mt-0.5">Chọn ngày để xem danh sách CTV đăng ký ca trực và trạng thái điểm danh vào/ra ca</p>
               </div>
               <div class="flex items-center gap-2">
                 <label class="text-xs font-bold text-slate-600">Chọn ngày xem:</label>
@@ -328,11 +342,11 @@
                 <thead class="bg-amber-50/70 text-amber-950 font-bold border-b border-amber-200">
                   <tr>
                     <th class="p-3 w-12 text-center">STT</th>
-                    <th class="p-3">Họ và Tên CTV</th>
+                    <th class="p-3">Họ và Tên</th>
                     <th class="p-3">Lớp</th>
                     <th class="p-3 text-center">Khung Giờ Trực</th>
-                    <th class="p-3 text-center">Giờ Vào (Check-In)</th>
-                    <th class="p-3 text-center">Giờ Ra (Check-Out)</th>
+                    <th class="p-3 text-center">Giờ Vào</th>
+                    <th class="p-3 text-center">Giờ Ra</th>
                     <th class="p-3 text-center">Trạng Thái Điểm Danh</th>
                   </tr>
                 </thead>
@@ -353,7 +367,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
               <div>
                 <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
-                  <i class="fa-solid fa-inbox text-sky-600"></i> Danh Sách File Dữ Liệu CTV Gửi Về
+                  <i class="fa-solid fa-inbox text-sky-600"></i> CƠ SỞ DỮ LIỆU
                 </h3>
                 <p class="text-xs text-slate-400 mt-0.5">Tải file danh sách do CTV đính kèm về kiểm tra trước khi import vào hệ thống</p>
               </div>
@@ -375,7 +389,7 @@
                   </tr>
                 </thead>
                 <tbody id="tbody-ctv-files-admin" class="divide-y divide-slate-100 bg-white">
-                  <tr><td colspan="6" class="text-center py-5 text-slate-400">Đang tải danh sách file...</td></tr>
+                  <tr><td colspan="6" class="text-center py-5 text-slate-400">Đang tải ...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -488,9 +502,9 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
               <div>
                 <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
-                  <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Bàn Giao & Thu Hồi Vật Phẩm
+                  <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Quản lý Vật Phẩm
                 </h2>
-                <p class="text-xs text-slate-400 mt-0.5">Bổ sung hiển thị Lớp của sinh viên và hỗ trợ chụp ảnh trực tiếp từ Camera</p>
+                <p class="text-xs text-slate-400 mt-0.5">Chọn GIAO khi bàn giao vật phẩm và NHẬN khi đơn vị trả vật phẩm, kiểm tra hiện trạng và ghi nhận hình ảnh</p>
               </div>
               <button onclick="loadDonVatPhamAdmin()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold transition">
                 <i class="fa-solid fa-arrows-rotate"></i> Làm mới
@@ -503,7 +517,7 @@
                 <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 whitespace-nowrap">
                   <tr>
                     <th class="p-3 min-w-[150px]">Chương trình</th>
-                    <th class="p-3 min-w-[150px]">Người mượn & Lớp</th>
+                    <th class="p-3 min-w-[150px]">Thông tin người mượn</th>
                     <th class="p-3 min-w-[130px]">Thời gian mượn - trả</th>
                     <th class="p-3 min-w-[160px]">Danh mục đồ</th>
                     <th class="p-3 text-center min-w-[110px]">Ảnh hiện trạng</th>
@@ -528,11 +542,11 @@
                 <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
                   <i class="fa-solid fa-award text-rose-500"></i> Đánh Giá, Xếp Loại & Quản Lý Hồ Sơ CTV
                 </h2>
-                <p class="text-xs text-slate-400 mt-0.5">Dữ liệu đọc trực tiếp từ sheet HoSo_CTV. Nhấn vào dòng để xem chi tiết hoạt động của CTV.</p>
+                <p class="text-xs text-slate-400 mt-0.5">Dữ liệu đã được xác thực.</p>
               </div>
               <div class="flex items-center gap-2">
                 <button onclick="xuatExcelXepLoaiCTV()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md transition">
-                  <i class="fa-solid fa-file-excel"></i> Xuất Excel Hoàn Thành Nhiệm Vụ
+                  <i class="fa-solid fa-file-excel"></i> Xuất file minh chứng
                 </button>
                 <button onclick="loadDanhSachCTVAdmin()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
                   <i class="fa-solid fa-arrows-rotate"></i>
@@ -559,7 +573,7 @@
                   <tr>
                     <th class="p-3 w-12 text-center">STT</th>
                     <th class="p-3 w-28">MSSV</th>
-                    <th class="p-3 min-w-[200px]">Họ và Tên & Lớp</th>
+                    <th class="p-3 min-w-[200px]">Họ và Tên</th>
                     <th class="p-3 w-36">Ban</th>
                     <th class="p-3 text-center w-36">Trực văn phòng</th>
                     <th class="p-3 text-center w-40">Hoạt động tham gia</th>
@@ -569,7 +583,7 @@
                 <tbody id="tbody-ctv-admin" class="divide-y divide-rose-50 bg-white">
                   <tr>
                     <td colspan="7" class="text-center py-6 text-slate-400 whitespace-nowrap">
-                      <i class="fa-solid fa-spinner fa-spin mr-1.5 text-rose-500"></i> Đang nạp danh sách CTV từ Google Sheets...
+                      <i class="fa-solid fa-spinner fa-spin mr-1.5 text-rose-500"></i> Đang tải danh sách CTV từ Google Sheets...
                     </td>
                   </tr>
                 </tbody>
@@ -586,9 +600,9 @@
             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-3">
               <div>
                 <h2 class="font-extrabold text-sm text-slate-800 uppercase flex items-center gap-2">
-                  <i class="fa-solid fa-bullhorn text-sky-600"></i> Quản Lý Tuyển & Điểm Danh Hoạt Động CTV
+                  <i class="fa-solid fa-bullhorn text-sky-600"></i> QUẢN LÝ HOẠT ĐỘNG
                 </h2>
-                <p class="text-xs text-slate-400 mt-0.5">Tạo hoạt động mới, hệ thống tự động đóng đơn khi đủ CTV. QTV điểm danh trực tiếp</p>
+                <p class="text-xs text-slate-400 mt-0.5">Tạo hoạt động mới, hệ thống tự động đóng đơn khi đủ CTV, QTV điểm danh BTC để xác nhận quyền lợi</p>
               </div>
               <div class="flex items-center gap-2">
                 <button onclick="openModalTaoHoatDongMoi()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md transition">
@@ -829,7 +843,7 @@
     // =========================================================================
     async function loadCsvcDataAdmin() {
       const tbody = document.getElementById("tbody-csvc-admin");
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-sky-600"></i> Đang tải dữ liệu CSVC từ máy chủ...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-sky-600"></i> Đang tải...</td></tr>`;
 
       try {
         const res = await fetch(`${API_URL}?action=GET_ADMIN_CSVC`);
@@ -855,7 +869,7 @@
       updateSelectedCsvcCount();
 
       if (loadedCsvcList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Không có đơn CSVC nào.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Không có yêu cầu nào.</td></tr>`;
         return;
       }
 
@@ -1051,7 +1065,7 @@
     // =========================================================================
     async function loadMonthsAdmin() {
       const container = document.getElementById("container-months-admin");
-      container.innerHTML = `<span class="text-xs text-slate-400">Đang nạp danh sách kỳ báo cáo...</span>`;
+      container.innerHTML = `<span class="text-xs text-slate-400">Đang tải danh sách kỳ báo cáo...</span>`;
 
       try {
         const res = await fetch(`${API_URL}?action=GET_ALL_MONTHS_ADMIN`);
@@ -1261,7 +1275,13 @@
       const tbody = document.getElementById("tbody-lich-truc-admin");
       if (!tbody) return;
 
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-amber-500"></i> Đang tải danh sách ca trực...</td></tr>`;
+      tbody.innerHTML = `<tr>
+        <td colspan="7" class="text-center py-8">
+          <div class="loading-pulse">
+            <i class="fa-solid fa-circle-notch fa-spin text-sky-500"></i> Đang đồng bộ dữ liệu ca trực...
+          </div>
+        </td>
+      </tr>`;
 
       try {
         const res = await fetch(`${API_URL}?action=GET_LICH_TRUC_CTV_BY_DATE&ngay=${encodeURIComponent(dateVal || "")}`);
@@ -1278,7 +1298,6 @@
             if (s.trangThai === "HOP_LE") {
               badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 flex items-center justify-center gap-1"><i class="fa-solid fa-circle-check"></i> Hợp lệ</span>`;
             } else if (s.trangThai === "TRUNG_THIET_BI") {
-              // Hiển thị huy hiệu màu vàng cảnh báo trùng thiết bị kèm nội dung ghi chú khi rê chuột vào
               badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300 flex items-center justify-center gap-1" title="${s.ghiChu || 'Trùng thiết bị'}"><i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Trùng thiết bị</span>`;
             } else if (s.trangThai === "KHONG_HOP_LE") {
               badgeTrangThai = `<span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 flex items-center justify-center gap-1" title="${s.ghiChu || ''}"><i class="fa-solid fa-triangle-exclamation"></i> Không hợp lệ</span>`;
@@ -1306,7 +1325,7 @@
             `;
           }).join('');
         } else {
-          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi nạp dữ liệu từ máy chủ!'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi tải dữ liệu từ máy chủ!'}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">Lỗi kết nối: ${err.message}</td></tr>`;
@@ -1471,7 +1490,7 @@
       };
 
       Swal.fire({
-        title: "Đang nạp dữ liệu...",
+        title: "Đang tải dữ liệu...",
         html: `Đang ghi <b>${smartParsedRows.length}</b> dòng vào tab <b>[${tabName}]</b>. Vui lòng chờ...`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
@@ -1612,7 +1631,7 @@
             </tr>
           `).join('');
         } else {
-          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi nạp danh sách vật phẩm!'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi tải danh sách vật phẩm!'}</td></tr>`;
         }
       } catch (e) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">Lỗi kết nối máy chủ!</td></tr>`;
@@ -1689,7 +1708,7 @@
         <input type="text" placeholder="Tên công việc..." class="flex-1 p-2 bg-white border border-slate-200 rounded-xl font-bold outline-none vt-ten" required>
         <div class="flex items-center gap-1">
           <span class="text-slate-500 font-bold text-[11px]">SL:</span>
-          <input type="number" min="1" value="3" class="w-16 p-2 bg-white border border-slate-200 rounded-xl font-bold outline-none text-center vt-sl" required>
+          <input type="number" min="1" value="5" class="w-16 p-2 bg-white border border-slate-200 rounded-xl font-bold outline-none text-center vt-sl" required>
         </div>
         <button type="button" onclick="this.parentElement.remove()" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl font-bold">&times;</button>
       `;
@@ -1988,7 +2007,7 @@
     async function loadDanhSachCTVAdmin() {
       const tbody = document.getElementById("tbody-ctv-admin");
       if (!tbody) return;
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-rose-500"></i> Đang nạp danh sách CTV từ Google Sheets...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-rose-500"></i> Đang tải danh sách CTV từ Google Sheets...</td></tr>`;
 
       try {
         const res = await fetch(`${API_URL}?action=GET_ALL_CTV_ACCOUNTS`);
@@ -2002,7 +2021,7 @@
           }
           locDanhSachCTVTheoBan();
         } else {
-          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi nạp danh sách CTV!'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi tải danh sách CTV!'}</td></tr>`;
         }
       } catch (e) {
         tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500 font-bold">Lỗi kết nối máy chủ (${e.message})!</td></tr>`;
@@ -2058,13 +2077,15 @@
             </td>
 
             <td class="p-3 text-center whitespace-nowrap" onclick="event.stopPropagation()">
-              <div class="inline-flex items-center justify-center gap-1.5">
-                <select onchange="capNhatXepLoaiCTV('${c.mssv}', this.value)" class="p-1.5 border border-slate-200 rounded-xl text-xs font-bold bg-white outline-none focus:border-rose-400 cursor-pointer shadow-xs">
+              <div class="inline-flex items-center justify-center gap-2">
+                <select id="select-rank-${c.mssv}" class="p-1.5 border border-slate-200 rounded-xl text-xs font-bold bg-white outline-none focus:border-rose-400 cursor-pointer shadow-xs">
                   <option value="Thành viên hoàn thành xuất sắc" ${c.xepLoai === 'Thành viên hoàn thành xuất sắc' ? 'selected' : ''}>Hoàn thành xuất sắc</option>
                   <option value="Thành viên hoàn thành" ${c.xepLoai === 'Thành viên hoàn thành' ? 'selected' : ''}>Hoàn thành</option>
                   <option value="Chưa hoàn thành" ${c.xepLoai === 'Chưa hoàn thành' || !c.xepLoai ? 'selected' : ''}>Chưa hoàn thành</option>
                 </select>
-                <span class="text-emerald-600 text-xs font-bold w-12 text-left" id="saved-status-${c.mssv}"></span>
+                <button onclick="luuXepLoaiCTV('${c.mssv}')" id="btn-save-rank-${c.mssv}" class="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs flex items-center gap-1 shadow-sm transition">
+                  <i class="fa-solid fa-floppy-disk"></i> Lưu
+                </button>
               </div>
             </td>
           </tr>
@@ -2144,9 +2165,15 @@
       }
     }
 
-    async function capNhatXepLoaiCTV(mssv, newVal) {
-      const statusEl = document.getElementById(`saved-status-${mssv}`);
-      if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-slate-400"></i>`;
+    async function luuXepLoaiCTV(mssv) {
+      const sel = document.getElementById(`select-rank-${mssv}`);
+      const newVal = sel ? sel.value : "";
+      const btn = document.getElementById(`btn-save-rank-${mssv}`);
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Lưu`;
+      }
 
       try {
         const res = await fetch(API_URL, {
@@ -2161,14 +2188,28 @@
         if (data.success) {
           const item = loadedCTVList.find(x => x.mssv === mssv);
           if (item) item.xepLoai = newVal;
-          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> Đã lưu`;
-          setTimeout(() => { if (statusEl) statusEl.innerText = ""; }, 2000);
+          Swal.fire({
+            icon: 'success',
+            title: 'Đã lưu xếp loại!',
+            text: `Đã lưu xếp loại "${newVal}" cho CTV MSSV ${mssv}!`,
+            timer: 1500,
+            showConfirmButton: false
+          });
         } else {
-          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i> Lỗi`;
+          Swal.fire("Lỗi", data.message || "Không thể lưu xếp loại!", "error");
         }
       } catch (e) {
-        if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i> Lỗi`;
+        Swal.fire("Lỗi kết nối", e.message, "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Lưu`;
+        }
       }
+    }
+
+    async function capNhatXepLoaiCTV(mssv, newVal) {
+      await luuXepLoaiCTV(mssv);
     }
 
     function xuatExcelXepLoaiCTV() {

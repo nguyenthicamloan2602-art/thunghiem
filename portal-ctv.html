@@ -15,14 +15,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    body, button, input, select, textarea {
-      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif !important;
+    * {
       box-sizing: border-box;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+
+    body, button, input, select, textarea, p, span, h1, h2, h3, h4, h5, h6, table, th, td, label, div, a {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Giữ nguyên font FontAwesome cho các biểu tượng icon, không bị biến thành ô chữ nhật */
     .fa, .fas, .far, .fa-solid, .fa-regular, .fa-brands, [class*="fa-"] {
       font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
     }
+
     .bg-mesh {
       background-color: #f8fafc;
       background-image: 
@@ -34,6 +41,21 @@
       background: rgba(255, 255, 255, 0.95);
       border: 1px solid rgba(226, 232, 240, 0.8);
       box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.05);
+    }
+
+    /* Hiệu ứng nạp dữ liệu mượt mà */
+    .loading-pulse {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #64748b;
+      animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .45; }
     }
   </style>
 </head>
@@ -53,20 +75,34 @@
       </div>
 
       <nav class="space-y-1 text-xs font-bold">
+        <!-- 1. Đăng ký trực & Điểm danh (Icon vàng cam) -->
         <button onclick="switchCtvTab('ca-truc')" id="tab-btn-ct" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-sky-500 text-white shadow-md transition">
-          <i class="fa-solid fa-calendar-days text-sm w-4"></i> Ca Trực &amp; Quét QR
+          <i class="fa-solid fa-calendar-days text-sm w-4 text-amber-500"></i> Đăng ký trực &amp; Điểm danh
         </button>
+
+        <!-- 2. Quản lý dữ liệu (Icon xanh chàm Indigo) -->
         <button onclick="switchCtvTab('quan-ly-data')" id="tab-btn-qld" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-file-excel text-sm w-4"></i> Quản Lý Dữ Liệu
+          <i class="fa-solid fa-file-excel text-sm w-4 text-indigo-600"></i> Quản Lý Dữ Liệu
         </button>
+
+        <!-- 3. Quản lý vật phẩm (Icon xanh lá Emerald) -->
         <button onclick="switchCtvTab('ban-giao')" id="tab-btn-bg" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-box-open text-sm w-4"></i> Bàn Giao Vật Phẩm
+          <i class="fa-solid fa-boxes-stacked text-sm w-4 text-emerald-600"></i> Quản lý vật phẩm
         </button>
+
+        <!-- 4. Thông tin báo cáo (Icon tím Purple) -->
         <button onclick="switchCtvTab('tong-hop-bc')" id="tab-btn-bc" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-chart-pie text-sm w-4"></i> Báo Cáo Tháng
+          <i class="fa-solid fa-chart-pie text-sm w-4 text-purple-600"></i> Thông tin báo cáo
         </button>
+
+        <!-- 5. Đăng ký hoạt động (Icon xanh dương Sky) -->
         <button onclick="switchCtvTab('hoat-dong')" id="tab-btn-hd" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
-          <i class="fa-solid fa-bullhorn text-sm w-4"></i> Đăng Ký Hoạt Động
+          <i class="fa-solid fa-bullhorn text-sm w-4 text-sky-500"></i> Đăng ký hoạt động
+        </button>
+
+        <!-- 6. Danh bạ Văn phòng (Icon ngọc lục bảo) -->
+        <button onclick="switchCtvTab('danh-ba')" id="tab-btn-db" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
+          <i class="fa-solid fa-address-book text-sm w-4 text-teal-600"></i> Danh Bạ Văn Phòng
         </button>
 
         <!-- KHỐI TÍNH NĂNG MỞ RỘNG (ĐÃ KHÓA) -->
@@ -76,16 +112,16 @@
 
         <button disabled class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-slate-400 bg-slate-100/60 cursor-not-allowed opacity-60">
           <div class="flex items-center gap-3">
-            <i class="fa-solid fa-file-word text-sm w-4"></i> Kho Biểu Mẫu Đoàn - Hội
+            <i class="fa-solid fa-file-word text-sm w-4"></i> Mẫu văn bản
           </div>
           <span class="text-[9px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">SẮP MỞ</span>
         </button>
 
         <button disabled class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-slate-400 bg-slate-100/60 cursor-not-allowed opacity-60">
           <div class="flex items-center gap-3">
-            <i class="fa-solid fa-receipt text-sm w-4"></i> Hỗ Trợ Quyết Toán HĐ
+            <i class="fa-solid fa-receipt text-sm w-4"></i> Hồ sơ thanh toán
           </div>
-          <span class="text-[9px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">AI</span>
+          <span class="text-[9px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">SẮP MỞ</span>
         </button>
       </nav>
     </div>
@@ -194,18 +230,18 @@
               </div>
               <div class="sm:col-span-2">
                 <label class="block font-bold text-slate-700 mb-1">Khung giờ trực (Chọn 1 hoặc nhiều ca) *</label>
-                <div class="grid grid-cols-3 gap-2">
-                  <label class="flex items-center justify-center gap-1.5 p-2 bg-white border border-sky-200 rounded-xl cursor-pointer hover:bg-sky-50 font-bold text-slate-700 transition">
-                    <input type="checkbox" name="chk_shift_slot" value="08:00-12:00" class="w-4 h-4 rounded text-sky-600">
-                    <span>08:00 - 12:00</span>
+                <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
+                  <label class="flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 py-2 sm:px-2 bg-white border border-sky-200 rounded-xl cursor-pointer hover:bg-sky-50 font-bold text-slate-700 transition text-[11px] sm:text-xs">
+                    <input type="checkbox" name="chk_shift_slot" value="08:00-12:00" class="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-sky-600 shrink-0">
+                    <span class="whitespace-nowrap">08:00 - 12:00</span>
                   </label>
-                  <label class="flex items-center justify-center gap-1.5 p-2 bg-white border border-sky-200 rounded-xl cursor-pointer hover:bg-sky-50 font-bold text-slate-700 transition">
-                    <input type="checkbox" name="chk_shift_slot" value="12:00-16:00" class="w-4 h-4 rounded text-sky-600">
-                    <span>12:00 - 16:00</span>
+                  <label class="flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 py-2 sm:px-2 bg-white border border-sky-200 rounded-xl cursor-pointer hover:bg-sky-50 font-bold text-slate-700 transition text-[11px] sm:text-xs">
+                    <input type="checkbox" name="chk_shift_slot" value="12:00-16:00" class="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-sky-600 shrink-0">
+                    <span class="whitespace-nowrap">12:00 - 16:00</span>
                   </label>
-                  <label class="flex items-center justify-center gap-1.5 p-2 bg-white border border-sky-200 rounded-xl cursor-pointer hover:bg-sky-50 font-bold text-slate-700 transition">
-                    <input type="checkbox" name="chk_shift_slot" value="16:00-20:00" class="w-4 h-4 rounded text-sky-600">
-                    <span>16:00 - 20:00</span>
+                  <label class="flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 py-2 sm:px-2 bg-white border border-sky-200 rounded-xl cursor-pointer hover:bg-sky-50 font-bold text-slate-700 transition text-[11px] sm:text-xs">
+                    <input type="checkbox" name="chk_shift_slot" value="16:00-20:00" class="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded text-sky-600 shrink-0">
+                    <span class="whitespace-nowrap">16:00 - 20:00</span>
                   </label>
                 </div>
               </div>
@@ -233,7 +269,7 @@
                   </tr>
                 </thead>
                 <tbody id="my-shifts-tbody" class="divide-y divide-slate-100">
-                  <tr><td colspan="6" class="text-center py-4 text-slate-400">Đang nạp ca trực...</td></tr>
+                  <tr><td colspan="6" class="text-center py-4 text-slate-400">Đang tải...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -269,9 +305,9 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <h2 class="text-base font-black text-slate-800 uppercase flex items-center gap-2">
-              <i class="fa-solid fa-file-excel text-emerald-600"></i> Quản Lý &amp; Gửi Dữ Liệu Chương Trình Cho QTV
+              <i class="fa-solid fa-file-excel text-emerald-600"></i> NỘP DANH SÁCH DỮ LIỆU
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Tải file mẫu Excel, điền danh sách sinh viên tham gia và gửi để QTV ghi nhận vào hồ sơ hệ thống.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Tải file excel mẫu, điền danh sách sinh viên tham gia và gửi để QTV ghi nhận vào hồ sơ hệ thống.</p>
           </div>
           
           <!-- NÚT TẢI FILE MẪU CHUẨN CỦA ĐOÀN - HỘI -->
@@ -303,7 +339,7 @@
           </div>
 
           <button onclick="processAndUploadData()" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Bắt đầu Gửi Dữ Liệu Cho QTV
+            <i class="fa-solid fa-cloud-arrow-up"></i> GỬI DANH SÁCH
           </button>
         </div>
       </div>
@@ -314,9 +350,9 @@
       <div class="flex justify-between items-center">
         <div>
           <h1 class="text-base font-black text-slate-800 uppercase flex items-center gap-2">
-            <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Quản Lý &amp; Bàn Giao Vật Phẩm
+            <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Quản Lý Vật Phẩm
           </h1>
-          <p class="text-xs text-slate-400 mt-0.5">Hỗ trợ chụp ảnh hiện trạng từ camera để làm minh chứng bàn giao và hoàn trả đồ</p>
+          <p class="text-xs text-slate-400 mt-0.5">Kiểm tra thông tin, giao hoặc nhận vật phẩm kèm chụp ảnh minh chứng hiện trạng</p>
         </div>
         <button onclick="loadVatPhamOrders()" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-xs transition">
           <i class="fa-solid fa-arrows-rotate mr-1"></i> Làm mới
@@ -328,7 +364,7 @@
           <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 whitespace-nowrap">
             <tr>
               <th class="p-3 min-w-[150px]">Chương trình</th>
-              <th class="p-3 min-w-[150px]">Người mượn &amp; Lớp</th>
+              <th class="p-3 min-w-[150px]">Thông tin người mượn
               <th class="p-3 min-w-[130px]">Thời gian mượn - trả</th>
               <th class="p-3 min-w-[160px]">Danh mục đồ</th>
               <th class="p-3 text-center min-w-[110px]">Ảnh hiện trạng</th>
@@ -404,6 +440,44 @@
         <p class="text-xs text-slate-400">Xem và đăng ký các vị trí công việc theo nhu cầu.</p>
       </div>
       <div id="activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- 6. DANH BẠ THÀNH VIÊN VĂN PHÒNG -->
+    <div id="view-ctv-danhba" class="hidden space-y-4">
+      <div class="glass-card rounded-[28px] p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <h1 class="text-base font-black text-slate-800 uppercase flex items-center gap-2">
+              <i class="fa-solid fa-address-book text-emerald-600"></i> Danh Bạ Thành Viên Văn Phòng
+            </h1>
+            <p class="text-xs text-slate-400 mt-0.5">Tra cứu thông tin liên hệ của Ban Quản trị và các bạn Cộng tác viên Văn phòng</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="search-danh-ba-ctv" oninput="timKiemDanhBaCTV(this.value)" placeholder="Tìm theo tên, lớp, SĐT..." class="px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-medium outline-none bg-slate-50 focus:bg-white focus:border-sky-500">
+            <button onclick="loadDanhBaVanPhongCTV()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold transition">
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden min-w-[700px]">
+            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+              <tr>
+                <th class="p-3 w-12 text-center">STT</th>
+                <th class="p-3 min-w-[170px]">Họ và Tên</th>
+                <th class="p-3 min-w-[110px]">Lớp</th>
+                <th class="p-3 text-center min-w-[90px]">Năm sinh</th>
+                <th class="p-3 min-w-[130px]">Số điện thoại</th>
+                <th class="p-3 min-w-[130px]">Ban / Vai trò</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-danh-ba-ctv" class="divide-y divide-slate-100 bg-white">
+              <tr><td colspan="6" class="text-center py-6 text-slate-400">Đang tải danh bạ...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- MODAL CHỤP ẢNH HIỆN TRẠNG BÀN GIAO VẬT PHẨM (CAMERA) CHO CTV -->
@@ -496,24 +570,39 @@
 
     function switchCtvTab(tab) {
       toggleMobileSidebar(false);
-      ['ca-truc', 'quan-ly-data', 'ban-giao', 'tong-hop-bc', 'hoat-dong'].forEach(t => {
-        const sec = document.getElementById(`view-ctv-${t === 'tong-hop-bc' ? 'baocao' : (t === 'ca-truc' ? 'catruc' : (t === 'ban-giao' ? 'bangiao' : (t === 'quan-ly-data' ? 'quanlydata' : 'hoatdong')))}`);
+
+      // 1. Ẩn tất cả các view (đã thêm danh-ba)
+      ['ca-truc', 'quan-ly-data', 'ban-giao', 'tong-hop-bc', 'hoat-dong', 'danh-ba'].forEach(t => {
+        const viewId = t === 'tong-hop-bc' ? 'baocao' 
+                     : (t === 'ca-truc' ? 'catruc' 
+                     : (t === 'ban-giao' ? 'bangiao' 
+                     : (t === 'quan-ly-data' ? 'quanlydata' 
+                     : (t === 'hoat-dong' ? 'hoatdong' : 'danhba'))));
+        const sec = document.getElementById(`view-ctv-${viewId}`);
         if (sec) sec.classList.add("hidden");
       });
 
+      // 2. Danh sách nút sidebar (đã thêm tab-btn-db)
       const map = {
-        'ca-truc': 'tab-btn-ct', 'quan-ly-data': 'tab-btn-qld',
-        'ban-giao': 'tab-btn-bg', 'tong-hop-bc': 'tab-btn-bc', 'hoat-dong': 'tab-btn-hd'
+        'ca-truc': 'tab-btn-ct', 
+        'quan-ly-data': 'tab-btn-qld',
+        'ban-giao': 'tab-btn-bg', 
+        'tong-hop-bc': 'tab-btn-bc', 
+        'hoat-dong': 'tab-btn-hd',
+        'danh-ba': 'tab-btn-db'
       };
 
+      // Đặt lại style mặc định cho các nút
       Object.values(map).forEach(id => {
         const btn = document.getElementById(id);
         if (btn) btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition font-bold";
       });
 
+      // Đổi màu xanh nổi bật cho nút đang chọn
       const activeBtn = document.getElementById(map[tab]);
-      if (activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-sky-500 text-white shadow-md transition font-bold";
+      if (activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-sky-600 text-white shadow-md shadow-sky-600/20 transition font-bold [&>i]:text-white";
 
+      // 3. Kích hoạt view và nạp dữ liệu tương ứng
       if (tab === 'ca-truc') {
         document.getElementById("view-ctv-catruc").classList.remove("hidden");
         loadCtvShiftStats();
@@ -528,17 +617,33 @@
       } else if (tab === 'hoat-dong') {
         document.getElementById("view-ctv-hoatdong").classList.remove("hidden");
         loadActivities();
+      } else if (tab === 'danh-ba') {
+        document.getElementById("view-ctv-danhba").classList.remove("hidden");
+        loadDanhBaVanPhongCTV();
       }
     }
-
-    // 1. ĐĂNG KÝ CA TRỰC NHANH & NẠP THỐNG KÊ
+    
     async function loadCtvShiftStats() {
       try {
         const res = await fetch(`${API_URL}?action=GET_CTV_SHIFTS&username=${encodeURIComponent(currentUser.username)}`);
         const data = await res.json();
-        if (data.success) {
+        if (data.success && data.data) {
           document.getElementById("stat-total-hours").innerText = `${data.data.totalHours} giờ`;
           document.getElementById("stat-total-shifts").innerText = `${data.data.totalShifts} ca`;
+
+          // Cập nhật xếp loại thực tế từ QTV
+          const rankEl = document.getElementById("stat-rank");
+          if (rankEl) {
+            const xepLoai = data.data.xepLoai || "Chưa xếp loại";
+            rankEl.innerText = xepLoai;
+            if (xepLoai.includes("xuất sắc")) {
+              rankEl.className = "text-xs font-black text-emerald-600";
+            } else if (xepLoai.includes("hoàn thành")) {
+              rankEl.className = "text-xs font-black text-sky-600";
+            } else {
+              rankEl.className = "text-xs font-black text-purple-700";
+            }
+          }
 
           const tbody = document.getElementById("my-shifts-tbody");
           if (data.data.shifts && data.data.shifts.length > 0) {
@@ -787,9 +892,13 @@
             </td>
             <td class="p-3 font-medium text-slate-700">${o.danhSachVatPham}</td>
             <td class="p-3 text-center">
-              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${o.trangThai === 'Đã trả' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                ${o.trangThai}
-              </span>
+              ${o.linkAnh ? `
+                <a href="${o.linkAnh}" target="_blank" class="px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 rounded-lg font-bold text-[10.5px] inline-flex items-center gap-1 shadow-xs transition">
+                  <i class="fa-solid fa-image"></i> Xem ảnh
+                </a>
+              ` : `
+                <span class="text-[10.5px] text-slate-400 italic">Chưa có ảnh</span>
+              `}
             </td>
             <td class="p-3 text-center space-x-1">
               <button onclick="openCameraCapture('${o.maDon}', 'BAN_GIAO')" class="px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 rounded-lg font-bold text-[10.5px] shadow-xs">
@@ -1453,6 +1562,72 @@
     // Thêm gọi hàm tự động cập nhật:
     fetchSystemNotifications();
     setInterval(fetchSystemNotifications, 30000);
+  let cachedDanhBaList = [];
+
+    async function loadDanhBaVanPhongCTV() {
+      const tbody = document.getElementById("tbody-danh-ba-ctv");
+      if (!tbody) return;
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-emerald-600"></i> Đang đồng bộ danh bạ văn phòng...</td></tr>`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=GET_DANH_BA_VAN_PHONG`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.list)) {
+          cachedDanhBaList = data.list;
+          renderBangDanhBaCTV(cachedDanhBaList);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500 font-bold">${data.message || 'Lỗi tải danh bạ!'}</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500 font-bold">Lỗi kết nối máy chủ!</td></tr>`;
+      }
+    }
+
+    function renderBangDanhBaCTV(list) {
+      const tbody = document.getElementById("tbody-danh-ba-ctv");
+      if (!tbody) return;
+      if (!list || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Không tìm thấy thành viên nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((m, idx) => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
+          <td class="p-3">
+            <b class="text-slate-800 block text-xs">${m.hoTen}</b>
+            <span class="text-[10.5px] ${m.vaiTro.includes('Quản trị') ? 'text-purple-600 font-bold' : 'text-slate-400 font-mono'}">${m.mssv ? `MSSV: ${m.mssv}` : m.vaiTro}</span>
+          </td>
+          <td class="p-3 font-semibold text-slate-700">${m.lop || '---'}</td>
+          <td class="p-3 text-center font-mono font-bold text-slate-600">${m.namSinh || '---'}</td>
+          <td class="p-3">
+            ${m.sdt && m.sdt !== '---' ? `
+              <a href="tel:${m.sdt}" class="font-mono font-bold text-emerald-700 hover:underline flex items-center gap-1.5">
+                <i class="fa-solid fa-phone text-[10px] text-emerald-500"></i> ${m.sdt}
+              </a>
+            ` : `<span class="text-slate-400 italic">---</span>`}
+          </td>
+          <td class="p-3">
+            <span class="px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold ${m.vaiTro.includes('Quản trị') ? 'bg-purple-100 text-purple-800' : 'bg-sky-50 text-sky-700 border border-sky-100'}">
+              ${m.ban || m.vaiTro}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function timKiemDanhBaCTV(keyword) {
+      const k = (keyword || "").trim().toLowerCase();
+      if (!k) return renderBangDanhBaCTV(cachedDanhBaList);
+      const filtered = cachedDanhBaList.filter(item => 
+        (item.hoTen && item.hoTen.toLowerCase().includes(k)) ||
+        (item.mssv && item.mssv.toLowerCase().includes(k)) ||
+        (item.lop && item.lop.toLowerCase().includes(k)) ||
+        (item.sdt && item.sdt.includes(k)) ||
+        (item.ban && item.ban.toLowerCase().includes(k))
+      );
+      renderBangDanhBaCTV(filtered);
+    }
   </script>
 </body>
 </html>
