@@ -78,36 +78,44 @@
 <body class="bg-mesh min-h-screen flex flex-col justify-between text-slate-800 relative selection:bg-sky-500 selection:text-white select-none">
   <div class="fixed inset-0 grid-pattern pointer-events-none z-0"></div>
 
-  <!-- HEADER -->
+  <!-- HEADER ĐÃ TỐI ƯU MOBILE CHỐNG RỚT CHỮ -->
   <header class="bg-white/90 backdrop-blur-xl border-b border-slate-200/90 shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <img alt="Logo UMP" class="h-10 sm:h-12 w-auto object-contain shrink-0 drop-shadow-sm cursor-pointer" onclick="backToMenu()" src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/f/f7/Logo_Đại_học_Y_Dược_TP.HCM.png'">
-        <div class="h-7 w-[2px] bg-sky-500 rounded-full hidden sm:block"></div>
-        <div>
-          <h1 class="font-extrabold text-xs md:text-sm tracking-tight text-slate-800 uppercase">CỔNG DỊCH VỤ QUẢN TRỊ SỐ</h1>
-          <p class="text-[10.5px] text-sky-600 font-bold uppercase">ĐOÀN THANH NIÊN - HỘI SINH VIÊN ĐH Y DƯỢC TPHCM</p>
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex justify-between items-center gap-2">
+      <!-- CỤM LOGO & TIÊU ĐỀ KHÔNG BỊ BÓP MẶT BẰNG -->
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+        <img alt="Logo UMP" class="h-9 sm:h-12 w-auto object-contain shrink-0 drop-shadow-sm cursor-pointer" onclick="backToMenu()" src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/f/f7/Logo_Đại_học_Y_Dược_TP.HCM.png'">
+        <div class="h-7 w-[2px] bg-sky-500 rounded-full hidden sm:block shrink-0"></div>
+        <div class="min-w-0">
+          <h1 class="font-black text-[11px] sm:text-xs md:text-sm tracking-tight text-slate-800 uppercase truncate">
+            CỔNG DỊCH VỤ QUẢN TRỊ SỐ
+          </h1>
+          <p class="text-[9px] sm:text-[10.5px] text-sky-600 font-bold uppercase truncate">
+            ĐOÀN – HỘI ĐH Y DƯỢC TPHCM
+          </p>
         </div>
       </div>
 
-        <div class="flex items-center gap-2.5">
-        <div class="hidden sm:flex items-center gap-2 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-100">
+      <!-- CỤM NÚT THAO TÁC GỌN GÀNG TRÊN MOBILE -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        <div class="hidden md:flex items-center gap-2 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-100">
           <i class="fa-solid fa-building-columns text-xs text-sky-600"></i>
           <span id="user-display-name" class="text-xs font-bold text-slate-700">Đang tải...</span>
         </div>
-        <button onclick="toggleUserChangePassModal(true)" class="px-3 py-1.5 bg-white hover:bg-sky-50 text-sky-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-sm">
-          <i class="fa-solid fa-key text-[11px]"></i> Đổi MK
+        
+        <button onclick="toggleUserChangePassModal(true)" class="p-2 sm:px-3 sm:py-1.5 bg-white hover:bg-sky-50 text-sky-700 rounded-xl text-xs font-bold transition flex items-center gap-1 border border-slate-200 shadow-xs" title="Đổi Mật Khẩu">
+          <i class="fa-solid fa-key text-[11px]"></i>
+          <span class="hidden sm:inline">Đổi MK</span>
         </button>
-        <!-- CỤM CHUÔNG THÔNG BÁO DÙNG CHUNG -->
+
+        <!-- CHUÔNG THÔNG BÁO -->
         <div class="relative">
-          <button onclick="toggleSystemNotificationDropdown()" id="btn-noti-bell-shared" class="relative w-10 h-10 rounded-2xl bg-white/90 hover:bg-white border border-slate-200 text-slate-700 flex items-center justify-center transition shadow-xs">
-            <i class="fa-regular fa-bell text-base"></i>
-            <!-- Chấm đỏ số lượng chưa đọc -->
-            <span id="sys-noti-badge" class="hidden absolute -top-1 -right-1 px-1.5 py-0.5 bg-rose-500 text-white font-black text-[10px] rounded-full border-2 border-white animate-pulse">0</span>
+          <button onclick="toggleSystemNotificationDropdown()" id="btn-noti-bell-shared" class="relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 flex items-center justify-center transition shadow-xs">
+            <i class="fa-regular fa-bell text-sm sm:text-base"></i>
+            <span id="sys-noti-badge" class="hidden absolute -top-1 -right-1 px-1.5 py-0.2 bg-rose-500 text-white font-black text-[9px] rounded-full border-2 border-white animate-pulse">0</span>
           </button>
 
-          <!-- MENU DROPDOWN THÔNG BÁO -->
-          <div id="sys-noti-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-100 p-4 z-50 space-y-3">
+          <!-- MENU DROPDOWN -->
+          <div id="sys-noti-dropdown" class="hidden absolute right-0 mt-2 w-72 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-100 p-4 z-50 space-y-3">
             <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
               <h4 class="font-black text-xs uppercase text-slate-800 flex items-center gap-1.5">
                 <i class="fa-solid fa-bell text-amber-500"></i> Trung Tâm Thông Báo
@@ -116,15 +124,15 @@
                 Đã đọc tất cả
               </button>
             </div>
-
-            <!-- DANH SÁCH THÔNG BÁO -->
-            <div id="sys-noti-list" class="max-h-80 overflow-y-auto space-y-2 text-xs divide-y divide-slate-50 pr-1">
+            <div id="sys-noti-list" class="max-h-72 overflow-y-auto space-y-2 text-xs divide-y divide-slate-50 pr-1">
               <p class="text-center py-4 text-slate-400">Đang đồng bộ thông báo...</p>
             </div>
           </div>
         </div>
-        <button onclick="logout()" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-rose-100">
-          <i class="fa-solid fa-right-from-bracket text-[11px]"></i> Đăng xuất
+
+        <button onclick="logout()" class="p-2 sm:px-3 sm:py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition flex items-center gap-1 border border-rose-100 shadow-xs" title="Đăng xuất">
+          <i class="fa-solid fa-right-from-bracket text-[11px]"></i>
+          <span class="hidden sm:inline">Thoát</span>
         </button>
       </div>
     </div>
