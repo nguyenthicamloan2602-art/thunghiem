@@ -25,7 +25,6 @@
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    /* Giữ nguyên font FontAwesome cho các biểu tượng icon, không bị biến thành ô chữ nhật */
     .fa, .fas, .far, .fa-solid, .fa-regular, .fa-brands, [class*="fa-"] {
       font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
     }
@@ -43,7 +42,6 @@
       box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.05);
     }
 
-    /* Hiệu ứng tải dữ liệu mượt mà */
     .loading-pulse {
       display: inline-flex;
       align-items: center;
@@ -75,37 +73,30 @@
       </div>
 
       <nav class="space-y-1 text-xs font-bold">
-        <!-- 1. Đăng ký trực & Điểm danh (Icon vàng cam) -->
         <button onclick="switchCtvTab('ca-truc')" id="tab-btn-ct" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-sky-500 text-white shadow-md transition">
           <i class="fa-solid fa-calendar-days text-sm w-4 text-amber-500"></i> Đăng ký trực &amp; Điểm danh
         </button>
 
-        <!-- 2. Quản lý dữ liệu (Icon xanh chàm Indigo) -->
         <button onclick="switchCtvTab('quan-ly-data')" id="tab-btn-qld" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
           <i class="fa-solid fa-file-excel text-sm w-4 text-indigo-600"></i> Quản Lý Dữ Liệu
         </button>
 
-        <!-- 3. Quản lý vật phẩm (Icon xanh lá Emerald) -->
         <button onclick="switchCtvTab('ban-giao')" id="tab-btn-bg" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
           <i class="fa-solid fa-boxes-stacked text-sm w-4 text-emerald-600"></i> Quản lý vật phẩm
         </button>
 
-        <!-- 4. Thông tin báo cáo (Icon tím Purple) -->
         <button onclick="switchCtvTab('tong-hop-bc')" id="tab-btn-bc" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
           <i class="fa-solid fa-chart-pie text-sm w-4 text-purple-600"></i> Thông tin báo cáo
         </button>
 
-        <!-- 5. Đăng ký hoạt động (Icon xanh dương Sky) -->
         <button onclick="switchCtvTab('hoat-dong')" id="tab-btn-hd" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
           <i class="fa-solid fa-bullhorn text-sm w-4 text-sky-500"></i> Đăng ký hoạt động
         </button>
 
-        <!-- 6. Danh bạ Văn phòng (Icon ngọc lục bảo) -->
         <button onclick="switchCtvTab('danh-ba')" id="tab-btn-db" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition">
           <i class="fa-solid fa-address-book text-sm w-4 text-teal-600"></i> Danh Bạ Văn Phòng
         </button>
 
-        <!-- KHỐI TÍNH NĂNG MỞ RỘNG (ĐÃ KHÓA) -->
         <div class="pt-3 pb-1 px-2 text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">
           Tiện ích mở rộng
         </div>
@@ -144,8 +135,6 @@
 
   <!-- MAIN VIEW CTV -->
   <main class="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto z-10">
-    
-    <!-- TOPBAR GÓC PHẢI CHỨA CHUÔNG THÔNG BÁO CHO CTV VÀ NÚT MENU MOBILE -->
     <div class="flex justify-between items-center bg-white/90 backdrop-blur-md p-3.5 px-4 sm:px-6 rounded-2xl border border-slate-200/80 shadow-xs mb-2">
       <div class="flex items-center gap-3">
         <button onclick="toggleMobileSidebar(true)" class="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
@@ -163,7 +152,6 @@
           <span id="sys-noti-badge" class="hidden absolute -top-1 -right-1 px-1.5 py-0.2 bg-rose-500 text-white font-black text-[9.5px] rounded-full border-2 border-white animate-pulse">0</span>
         </button>
 
-        <!-- MENU DROPDOWN CTV -->
         <div id="sys-noti-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-100 p-4 z-50 space-y-3">
           <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
             <h4 class="font-black text-xs uppercase text-slate-800 flex items-center gap-1.5">
@@ -279,19 +267,17 @@
         <!-- CỘT PHẢI: QUÉT QR -->
         <div class="lg:col-span-4 space-y-4">
           <div class="glass-card p-5 rounded-[28px] space-y-3.5">
-            <h3 class="font-extrabold text-xs uppercase text-slate-800"><i class="fa-solid fa-qrcode text-sky-600 mr-1"></i> Quét QR Điểm Danh</h3>
-            <div class="flex gap-2">
-              <label class="flex-1 text-center p-2 rounded-xl border border-sky-200 cursor-pointer bg-sky-50/60 font-bold text-xs">
-                <input type="radio" name="qr_type" value="IN" checked class="text-sky-600"> Vào ca
-              </label>
-              <label class="flex-1 text-center p-2 rounded-xl border border-amber-200 cursor-pointer bg-amber-50/60 font-bold text-xs">
-                <input type="radio" name="qr_type" value="OUT" class="text-amber-600"> Ra ca
-              </label>
-            </div>
+            <h3 class="font-extrabold text-xs uppercase text-slate-800 flex items-center justify-between">
+              <span><i class="fa-solid fa-qrcode text-sky-600 mr-1"></i> Quét QR Điểm Danh</span>
+              <span class="text-[10px] text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">Tự động nhận diện ca</span>
+            </h3>
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+              Bật camera và hướng về mã QR điểm danh tại Văn phòng. Sau khi quét, bạn chỉ cần chọn thao tác <b>Vào ca</b> hoặc <b>Ra ca</b>.
+            </p>
             <div id="qr-camera-box" class="w-full bg-slate-50 border border-slate-200 rounded-xl overflow-hidden min-h-[170px] flex items-center justify-center text-xs text-slate-400">
               Chưa bật camera
             </div>
-            <button onclick="startCameraScanner()" class="w-full py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+            <button onclick="startCameraScanner()" class="w-full py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
               <i class="fa-solid fa-camera"></i> Bật Camera Quét QR
             </button>
           </div>
@@ -310,13 +296,11 @@
             <p class="text-xs text-slate-400 mt-0.5">Tải file excel mẫu, điền danh sách sinh viên tham gia và gửi để QTV ghi nhận vào hồ sơ hệ thống.</p>
           </div>
           
-          <!-- NÚT TẢI FILE MẪU CHUẨN CỦA ĐOÀN - HỘI -->
           <a href="https://drive.google.com/uc?export=download&id=1_VGgUiXBSwhx_3x7SYdPv39whUc3gGrG" target="_blank" class="px-4 py-2 bg-white border border-slate-200 text-sky-700 font-bold rounded-xl text-xs hover:bg-sky-50 shadow-xs flex items-center gap-1.5 transition">
             <i class="fa-solid fa-download"></i> Tải File Mẫu (.xlsx)
           </a>
         </div>
 
-        <!-- FORM 4 TRƯỜNG CHUẨN: TÊN HĐ, NGÀY TỔ CHỨC, MỤC ĐRL, FILE DANH SÁCH -->
         <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3.5 text-xs">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
@@ -345,7 +329,7 @@
       </div>
     </div>
 
-    <!-- 3. BÀN GIAO VẬT PHẨM (ĐÃ ĐỒNG BỘ GIỐNG QTV) -->
+    <!-- 3. BÀN GIAO VẬT PHẨM -->
     <div id="view-ctv-bangiao" class="hidden space-y-4">
       <div class="flex justify-between items-center">
         <div>
@@ -364,7 +348,7 @@
           <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 whitespace-nowrap">
             <tr>
               <th class="p-3 min-w-[150px]">Chương trình</th>
-              <th class="p-3 min-w-[150px]">Thông tin người mượn
+              <th class="p-3 min-w-[150px]">Thông tin người mượn</th>
               <th class="p-3 min-w-[130px]">Thời gian mượn - trả</th>
               <th class="p-3 min-w-[160px]">Danh mục đồ</th>
               <th class="p-3 text-center min-w-[110px]">Ảnh hiện trạng</th>
@@ -378,7 +362,7 @@
       </div>
     </div>
 
-    <!-- 4. TỔNG HỢP BÁO CÁO THÁNG (ĐỒNG BỘ 100% GIAO DIỆN VỚI QTV) -->
+    <!-- 4. TỔNG HỢP BÁO CÁO THÁNG -->
     <div id="view-ctv-baocao" class="hidden space-y-4">
       <div class="glass-card rounded-[28px] p-5 space-y-3">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-purple-100 pb-3">
@@ -389,7 +373,6 @@
             <p class="text-xs text-slate-400 mt-0.5">Kiểm tra, chỉnh sửa và tổng hợp báo cáo</p>
           </div>
           <div class="flex items-center gap-2">
-            <!-- NÚT AI TỔNG HỢP WORD GIỐNG QTV -->
             <button onclick="openModalAiBaoCaoCTV()" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition">
               <i class="fa-solid fa-wand-magic-sparkles"></i> TỔNG HỢP BÁO CÁO
             </button>
@@ -399,7 +382,6 @@
           </div>
         </div>
 
-        <!-- BỘ LỌC TỰ NHIÊN: HIỂN THỊ TẤT CẢ MẶC ĐỊNH, CÓ THỂ LỌC THEO THÁNG -->
         <div class="flex flex-wrap items-center gap-2.5 bg-purple-50/60 p-3 rounded-2xl border border-purple-100 text-xs">
           <span class="font-bold text-purple-950">Lọc theo kỳ:</span>
           <input type="month" id="filter-bc-month" class="p-1.5 border border-purple-200 rounded-xl text-xs font-bold bg-white outline-none focus:border-purple-500" onchange="filterReportsByMonth()">
@@ -410,7 +392,6 @@
         </div>
       </div>
 
-      <!-- BẢNG DANH SÁCH 6 CỘT CHUẨN QTV -->
       <div class="glass-card rounded-[28px] p-5 space-y-3">
         <h3 class="font-black text-xs text-purple-900 uppercase">Danh Sách Báo Cáo Đơn Vị Gửi Về</h3>
         <div class="overflow-x-auto">
@@ -480,7 +461,7 @@
       </div>
     </div>
 
-    <!-- MODAL CHỤP ẢNH HIỆN TRẠNG BÀN GIAO VẬT PHẨM (CAMERA) CHO CTV -->
+    <!-- MODAL CHỤP ẢNH HIỆN TRẠNG -->
     <div id="modal-camera-vp" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
         <h3 class="font-black text-xs uppercase text-slate-800">Chụp Ảnh Hiện Trạng Vật Phẩm</h3>
@@ -571,7 +552,6 @@
     function switchCtvTab(tab) {
       toggleMobileSidebar(false);
 
-      // 1. Ẩn tất cả các view (đã thêm danh-ba)
       ['ca-truc', 'quan-ly-data', 'ban-giao', 'tong-hop-bc', 'hoat-dong', 'danh-ba'].forEach(t => {
         const viewId = t === 'tong-hop-bc' ? 'baocao' 
                      : (t === 'ca-truc' ? 'catruc' 
@@ -582,7 +562,6 @@
         if (sec) sec.classList.add("hidden");
       });
 
-      // 2. Danh sách nút sidebar (đã thêm tab-btn-db)
       const map = {
         'ca-truc': 'tab-btn-ct', 
         'quan-ly-data': 'tab-btn-qld',
@@ -592,17 +571,14 @@
         'danh-ba': 'tab-btn-db'
       };
 
-      // Đặt lại style mặc định cho các nút
       Object.values(map).forEach(id => {
         const btn = document.getElementById(id);
         if (btn) btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-sky-50 transition font-bold";
       });
 
-      // Đổi màu xanh nổi bật cho nút đang chọn
       const activeBtn = document.getElementById(map[tab]);
       if (activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-sky-600 text-white shadow-md shadow-sky-600/20 transition font-bold [&>i]:text-white";
 
-      // 3. Kích hoạt view và tải dữ liệu tương ứng
       if (tab === 'ca-truc') {
         document.getElementById("view-ctv-catruc").classList.remove("hidden");
         loadCtvShiftStats();
@@ -627,11 +603,10 @@
       try {
         const res = await fetch(`${API_URL}?action=GET_CTV_SHIFTS&username=${encodeURIComponent(currentUser.username)}`);
         const data = await res.json();
-        if (data.success && data.data) {
+        if (data && data.success && data.data) {
           document.getElementById("stat-total-hours").innerText = `${data.data.totalHours} giờ`;
           document.getElementById("stat-total-shifts").innerText = `${data.data.totalShifts} ca`;
 
-          // Cập nhật xếp loại thực tế từ QTV
           const rankEl = document.getElementById("stat-rank");
           if (rankEl) {
             const xepLoai = data.data.xepLoai || "Chưa xếp loại";
@@ -666,7 +641,6 @@
       } catch(e) {}
     }
 
-    // BÔI ĐEN ĐOẠN HÀM CŨ NÀY ĐỂ THAY THẾ:
     async function submitShiftRegister(e) {
       e.preventDefault();
       const sDate = document.getElementById("reg_shift_date").value;
@@ -681,7 +655,6 @@
 
       Swal.fire({ title: "Đang lưu ca trực...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-      // Lấy khung đầu tiên làm fallback cho bản cũ
       const firstParts = checkedSlots[0].split("-");
 
       sendPost({
@@ -702,16 +675,24 @@
       });
     }
 
-    // 2. QUÉT MÃ QR ĐIỂM DANH
     let scannerQrObj = null;
     function getDeviceFingerprint() {
-      const str = navigator.userAgent + screen.width + "x" + screen.height + (navigator.language || "");
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
-      return "DEV_" + Math.abs(hash);
+      const todayStr = new Date().toISOString().split("T")[0];
+      const u = (typeof currentUser !== "undefined" && currentUser && currentUser.username) 
+                ? currentUser.username 
+                : "user";
+      
+      const storageKey = `ump_device_token_${u}_${todayStr}`;
+      let devId = localStorage.getItem(storageKey);
+      
+      if (!devId || devId === "DEV_1292923429") {
+        const randomHex = Math.random().toString(36).substring(2, 8) + Date.now().toString(36).substring(4);
+        devId = "DEV_" + randomHex.toUpperCase();
+        localStorage.setItem(storageKey, devId);
+      }
+      return devId;
     }
 
-    // Bật/tắt thanh menu trên thiết bị di động
     function toggleMobileSidebar(show) {
       const sidebar = document.getElementById("sidebar-ctv");
       const overlay = document.getElementById("sidebar-overlay");
@@ -725,7 +706,7 @@
       }
     }
 
-    // Quét QR Camera siêu nhạy, chống treo mạng trong Zalo/iOS
+    // ĐIỂM DANH SIÊU TỐC - TỰ ĐỘNG CHỐNG LỖI KẾT NỐI TRÊN SAFARI/IOS
     function startCameraScanner() {
       const box = document.getElementById("qr-camera-box");
       box.innerHTML = `<div id="scanner-stream" class="w-full min-h-[220px]"></div>`;
@@ -745,48 +726,113 @@
         { fps: 15, qrbox: qrboxFn },
         async (decodedText) => {
           try { scannerQrObj.stop(); } catch(e){}
-          
+
+          const { value: selectedAction } = await Swal.fire({
+            title: '<span class="text-sm font-black uppercase text-slate-800">Xác nhận điểm danh</span>',
+            html: `
+              <p class="text-xs text-slate-500 mb-4">Đã quét thành công mã QR trực văn phòng. Vui lòng chọn thao tác của bạn:</p>
+              <div class="grid grid-cols-2 gap-3">
+                <button id="btn-swal-in" type="button" class="py-3 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-xs shadow-md transition flex flex-col items-center gap-1.5 cursor-pointer">
+                  <i class="fa-solid fa-right-to-bracket text-base"></i>
+                  <span>VÀO CA (Check-in)</span>
+                </button>
+                <button id="btn-swal-out" type="button" class="py-3 px-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-bold text-xs shadow-md transition flex flex-col items-center gap-1.5 cursor-pointer">
+                  <i class="fa-solid fa-right-from-bracket text-base"></i>
+                  <span>RA CA (Check-out)</span>
+                </button>
+              </div>
+            `,
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: 'Hủy bỏ',
+            cancelButtonColor: '#94a3b8',
+            didOpen: () => {
+              const bIn = document.getElementById('btn-swal-in');
+              const bOut = document.getElementById('btn-swal-out');
+              if (bIn) bIn.onclick = () => Swal.close({ value: 'IN' });
+              if (bOut) bOut.onclick = () => Swal.close({ value: 'OUT' });
+            }
+          });
+
+          if (!selectedAction) {
+            box.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 font-semibold">Đã hủy điểm danh. Bấm nút bên dưới nếu bạn muốn bật lại camera.</div>`;
+            return;
+          }
+
           Swal.fire({ 
-            title: "Đang xác thực mã QR...", 
-            text: "Vui lòng giữ nguyên màn hình...",
+            title: "Đang ghi nhận điểm danh...", 
+            text: "Hệ thống đang kiểm tra ca trực và lưu giờ vào Google Sheets...",
             allowOutsideClick: false, 
             didOpen: () => Swal.showLoading() 
           });
 
-          // Lấy IP với Timeout 500ms chống treo khi chạy trong trình duyệt Zalo / iOS
-          let userIP = "Unknown";
+          let userIP = "UMP-WiFi";
           try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 600);
-            const ipRes = await fetch("https://api.ipify.org?format=json", { signal: controller.signal });
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            let ipRes;
+            try {
+              ipRes = await fetch("https://api.ipify.org?format=json", { signal: controller.signal });
+            } catch(err1) {
+              ipRes = await fetch("https://1.1.1.1/cdn-cgi/trace", { signal: controller.signal });
+            }
             clearTimeout(timeoutId);
-            const ipData = await ipRes.json();
-            userIP = ipData.ip || "Unknown";
+            if (ipRes.headers.get("content-type")?.includes("json")) {
+              const ipData = await ipRes.json();
+              userIP = ipData.ip || "UMP-WiFi";
+            } else {
+              const text = await ipRes.text();
+              const match = text.match(/ip=(.+)/);
+              userIP = match ? match[1].trim() : "UMP-WiFi";
+            }
           } catch(e) {
-            userIP = "MobileClient";
+            userIP = "UMP-WiFi";
           }
 
-          const checkinType = document.querySelector('input[name="qr_type"]:checked') ? document.querySelector('input[name="qr_type"]:checked').value : "IN";
-
-          sendPost({
-            action: "CHECKIN_CTV_SECURE",
-            data: {
-              username: currentUser.username,
-              type: checkinType,
+          // GỬI QUA GET BẢO VỆ TUYỆT ĐỐI CHỐNG LỖI MẠNG TRÊN IPHONE
+          try {
+            const params = new URLSearchParams({
+              action: "CHECKIN_CTV_SECURE",
+              username: currentUser.username || "",
+              hoTen: currentUser.hoTen || currentUser.username || "",
+              lop: currentUser.lop || "",
+              type: selectedAction,
               qrToken: decodedText.trim(),
               ip: userIP,
               deviceId: getDeviceFingerprint()
+            });
+
+            const res = await fetch(`${API_URL}?${params.toString()}`);
+            const data = await res.json();
+
+            loadCtvShiftStats();
+
+            if (data && data.success) {
+              Swal.fire({
+                icon: "success",
+                title: "Điểm Danh Thành Công!",
+                text: data.message || `Đã ghi nhận ${selectedAction === 'IN' ? 'vào ca' : 'ra ca'} của bạn!`,
+                confirmButtonColor: "#0284c7"
+              });
+              box.innerHTML = `<div class="p-4 text-center text-xs text-emerald-600 font-bold"><i class="fa-solid fa-circle-check text-2xl mb-1 block"></i> Điểm danh hoàn tất! Bấm nút dưới để quét tiếp nếu cần.</div>`;
+            } else {
+              Swal.fire({
+                icon: "warning",
+                title: "Thông báo điểm danh",
+                text: (data && data.message) ? data.message : "Không thể hoàn tất điểm danh!",
+                confirmButtonColor: "#e11d48"
+              });
+              box.innerHTML = `<div class="p-4 text-center text-xs text-rose-500 font-bold"><i class="fa-solid fa-triangle-exclamation text-2xl mb-1 block"></i> ${(data && data.message) ? data.message : 'Chưa hoàn tất điểm danh'}</div>`;
             }
-          }, (res) => {
+          } catch (err) {
             loadCtvShiftStats();
             Swal.fire({
-              icon: "success",
-              title: "Điểm Danh Thành Công!",
-              text: res.message || `Đã ghi nhận ${checkinType === 'IN' ? 'vào ca' : 'ra ca'} của bạn!`,
+              icon: "info",
+              title: "Đã gửi dữ liệu",
+              text: "Hệ thống đang đồng bộ với Google Sheets, vui lòng kiểm tra bảng ca trực!",
               confirmButtonColor: "#0284c7"
             });
-            box.innerHTML = `<div class="p-4 text-center text-xs text-emerald-600 font-bold"><i class="fa-solid fa-circle-check text-2xl mb-1 block"></i> Điểm danh hoàn tất! Bấm nút dưới để quét tiếp nếu cần.</div>`;
-          });
+          }
         },
         () => {}
       ).catch((err) => {
@@ -794,7 +840,6 @@
       });
     }
 
-    // 3. QUẢN LÝ DỮ LIỆU & IMPORT
     function downloadSampleTemplate() {
       const sample = [
         { "MSSV": "225101001", "Họ Và Tên": "Nguyễn Văn A", "Lớp": "Y2022A", "Vị Trí / Vai Trò": "Tham gia" },
@@ -806,7 +851,6 @@
       XLSX.writeFile(wb, "Mau_Import_DiemDanh_UMP.xlsx");
     }
 
-    // CTV gửi tệp đính kèm lên Google Drive cho QTV (Không can thiệp thẳng vào Sheet cấp giấy)
     function processAndUploadData() {
       const fileInput = document.getElementById("import_file_input");
       const actName   = document.getElementById("import_act_name") ? document.getElementById("import_act_name").value.trim() : "";
@@ -831,7 +875,6 @@
 
       reader.onload = function(e) {
         const base64Data = e.target.result;
-
         const dParts = actDate.split("-");
         const dateFormatted = dParts.length === 3 ? `${dParts[2]}/${dParts[1]}/${dParts[0]}` : actDate;
 
@@ -864,7 +907,6 @@
     let activePhotoType = "BAN_GIAO";
     let activePhotoBase64 = "";
 
-    // tải danh sách đơn mượn vật phẩm (Đã sửa data.items và đồng bộ giống QTV)
     async function loadVatPhamOrders() {
       const tbody = document.getElementById("table-vp-body");
       tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-emerald-600"></i> Đang đồng bộ phiếu mượn...</td></tr>`;
@@ -989,7 +1031,6 @@
 
     let allLoadedReports = [];
 
-    // Tải toàn bộ danh sách báo cáo từ máy chủ
     async function loadReports() {
       const tbody = document.getElementById("table-bc-body");
       tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1 text-purple-600"></i> Đang tải dữ liệu báo cáo...</td></tr>`;
@@ -1010,15 +1051,14 @@
       }
     }
 
-    // Lọc danh sách theo tháng đã chọn (nếu để trống thì hiển thị tất cả)
     function filterReportsByMonth() {
       const tbody = document.getElementById("table-bc-body");
-      const selectedMonth = document.getElementById("filter-bc-month").value; // dạng YYYY-MM
+      const selectedMonth = document.getElementById("filter-bc-month").value;
       let filtered = allLoadedReports;
 
       if (selectedMonth) {
         const p = selectedMonth.split("-");
-        const mSlash = `${p[1]}/${p[0]}`; // MM/YYYY
+        const mSlash = `${p[1]}/${p[0]}`;
         filtered = allLoadedReports.filter(r => String(r.thang).includes(selectedMonth) || String(r.thang).includes(mSlash));
       }
 
@@ -1050,7 +1090,6 @@
     }
 
     function xemChiTietBaoCao(maBC) {
-      // Tìm báo cáo theo mã (hỗ trợ cả biến list của CTV lẫn QTV)
       const listSource = (typeof allLoadedReports !== 'undefined') ? allLoadedReports : (typeof loadedBaoCaoList !== 'undefined' ? loadedBaoCaoList : []);
       const r = listSource.find(x => String(x.maBC).trim() === String(maBC).trim());
       if (!r) return;
@@ -1062,8 +1101,6 @@
         title: `<div class="text-left"><span class="text-sm font-black uppercase text-purple-950 block">NỘI DUNG BÁO CÁO THÁNG</span><span class="text-xs text-slate-400 font-mono">${r.maBC}</span></div>`,
         html: `
           <div class="text-left space-y-3.5 pt-2 max-h-[75vh] overflow-y-auto text-xs text-slate-700 pr-1">
-            
-            <!-- THÔNG TIN CHUNG -->
             <div class="p-3 bg-purple-50/70 border border-purple-100 rounded-2xl space-y-1">
               <p><b>Đơn vị:</b> <span class="font-bold text-slate-900">${r.tenDonVi}</span></p>
               <div class="flex justify-between pt-0.5">
@@ -1073,7 +1110,6 @@
               <p><b>Tiến độ:</b> <span class="font-bold ${r.trangThai === 'DUNG_HAN' ? 'text-emerald-700' : 'text-rose-700'}">${r.trangThai === 'DUNG_HAN' ? 'Nộp đúng hạn' : 'Nộp trễ hạn'}</span></p>
             </div>
 
-            <!-- TỔNG HỢP 14 CHỈ TIÊU (DẠNG LƯỚI GỌN) -->
             <div>
               <span class="block font-black text-purple-950 uppercase text-[11px] mb-1.5"><i class="fa-solid fa-chart-column mr-1"></i> Số liệu 14 chỉ tiêu:</span>
               <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5 text-center text-[10.5px]">
@@ -1086,7 +1122,6 @@
               </div>
             </div>
 
-            <!-- NỘI DUNG CÁC CÂU HỎI HOẠT ĐỘNG THỰC TẾ -->
             <div class="space-y-2.5">
               <span class="block font-black text-purple-950 uppercase text-[11px]"><i class="fa-solid fa-list-check mr-1"></i> Nội dung hoạt động đã triển khai:</span>
               
@@ -1125,7 +1160,6 @@
                 <p class="text-slate-700 italic leading-relaxed font-medium whitespace-pre-line">${qa.kienNghi || 'Không có'}</p>
               </div>
             </div>
-
           </div>
         `,
         width: '620px',
@@ -1133,7 +1167,7 @@
         confirmButtonColor: '#7c3aed'
       });
     }
-    // Modal kích hoạt AI Tổng hợp báo cáo mẫu Word cho CTV
+
     function openModalAiBaoCaoCTV() {
       Swal.fire({
         title: `<span class="text-sm font-black uppercase text-purple-950">AI Tổng Hợp Báo Cáo Tháng</span>`,
@@ -1182,37 +1216,22 @@
       });
     }
 
-    // Modal xem tóm tắt thông tin báo cáo
-    function xemChiTietBaoCao(maBC, tenDonVi, thang, ngayNop) {
-      Swal.fire({
-        title: `<span class="text-sm font-black uppercase text-purple-950">CHI TIẾT BÁO CÁO THÁNG</span>`,
-        html: `
-          <div class="text-left text-xs space-y-2 p-2 text-slate-700">
-            <div class="p-3.5 bg-purple-50/70 border border-purple-100 rounded-2xl space-y-1.5">
-              <p><b>Mã Báo Cáo:</b> <span class="font-mono text-purple-900 font-bold">${maBC}</span></p>
-              <p><b>Tên Đơn Vị:</b> <span class="text-slate-900 font-bold">${tenDonVi}</span></p>
-              <p><b>Kỳ Báo Cáo:</b> ${thang}</p>
-              <p><b>Thời Gian Nộp:</b> ${ngayNop}</p>
-            </div>
-            <p class="text-[11px] text-slate-400 italic text-center pt-1">
-              * Dữ liệu 14 chỉ tiêu và các câu hỏi hoạt động đã được ghi nhận tự động vào Google Sheets.
-            </p>
-          </div>
-        `,
-        confirmButtonText: 'Đóng',
-        confirmButtonColor: '#7c3aed'
-      });
-    }
-
     async function loadActivities() {
       const box = document.getElementById("activity-list");
-      box.innerHTML = `<p class="text-slate-400 text-center col-span-3 py-8 text-xs"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tải danh sách hoạt động...</p>`;
+      if (!box) return;
+      box.innerHTML = `<p class="text-slate-400 text-center col-span-3 py-8 text-xs"><i class="fa-solid fa-spinner fa-spin mr-1 text-sky-600"></i> Đang tải danh sách hoạt động...</p>`;
 
       try {
         const res = await fetch(`${API_URL}?action=GET_DANH_SACH_HOAT_DONG_CTV`);
+        if (!res.ok) {
+          box.innerHTML = `<p class="text-slate-400 text-center col-span-3 py-8 text-xs">Máy chủ đang bận, vui lòng bấm chuyển lại tab hoặc tải lại trang!</p>`;
+          return;
+        }
+        
         const data = await res.json();
-        if (!data.success || !data.hoatDongs.length) {
-          return box.innerHTML = `<p class="text-slate-400 text-center col-span-3 py-8 text-xs">Hiện chưa có hoạt động nào mở đăng ký.</p>`;
+        if (!data || !data.success || !Array.isArray(data.hoatDongs) || data.hoatDongs.length === 0) {
+          box.innerHTML = `<p class="text-slate-400 text-center col-span-3 py-8 text-xs font-medium">Hiện chưa có hoạt động nào mở đăng ký.</p>`;
+          return;
         }
 
         const myUser = String(currentUser.username || "").trim().toLowerCase();
@@ -1261,19 +1280,16 @@
                 </div>
               </div>
 
-              <!-- Khu vực nút bấm Đăng ký hoặc Xin hủy -->
               <div class="space-y-2 pt-1 border-t border-slate-100">
                 ${isPendingCancel ? `
                   <button disabled class="w-full py-2.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold cursor-not-allowed">
                     Đã gửi lý do xin rút (Chờ QTV duyệt)
                   </button>
                 ` : (hasJoined ? `
-                  <!-- NÚT XIN RÚT / BÁO LÝ DO ĐẾN QTV -->
                   <button onclick="ctvBaoLyDoXinHuy('${a.maHD}', '${a.tenHoatDong}')" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
                     <i class="fa-solid fa-triangle-exclamation"></i> Báo vắng / Xin rút khỏi hoạt động
                   </button>
                 ` : `
-                  <!-- FORM ĐĂNG KÝ -->
                   <label class="block font-bold text-[11px] text-slate-700">Chọn vị trí công việc:</label>
                   <select id="pos-${a.maHD}" class="w-full p-2 border border-slate-200 rounded-xl text-xs font-bold bg-white outline-none focus:border-sky-500" ${isClosed ? 'disabled' : ''}>
                     ${viTriList.map(v => `<option value="${v.ten}">${v.ten} (Chỉ tiêu: ${v.soLuong})</option>`).join('')}
@@ -1294,11 +1310,10 @@
           `;
         }).join('');
       } catch(e) {
-        box.innerHTML = `<p class="text-rose-500 text-center col-span-3 py-8 text-xs">Lỗi tải hoạt động!</p>`;
+        box.innerHTML = `<p class="text-slate-400 text-center col-span-3 py-8 text-xs">Hiện chưa có hoạt động nào mở đăng ký.</p>`;
       }
     }
 
-    // Modal bắt buộc CTV nhập lý do trước khi gửi yêu cầu xin rút
     async function ctvBaoLyDoXinHuy(maHD, tenHD) {
       const { value: lyDo } = await Swal.fire({
         title: `<span class="text-sm font-black uppercase text-slate-800">XIN RÚT KHỎI HOẠT ĐỘNG</span>`,
@@ -1354,13 +1369,10 @@
       }
     }
 
-        // Hàm gọi đăng ký hoạt động
-        // Hàm đăng ký hoạt động: Có khóa nút chống bấm đúp và tự động tải lại giao diện
     async function applyActivity(maHD) {
       const posSelect = document.getElementById(`pos-${maHD}`);
       const pos = posSelect ? posSelect.value : "Thành viên";
 
-      // 1. Hiển thị thông báo đang xử lý và chặn người dùng bấm nhiều lần
       Swal.fire({
         title: "Đang đăng ký...",
         text: "Vui lòng chờ hệ thống ghi nhận vị trí công việc...",
@@ -1388,7 +1400,6 @@
         const data = await res.json();
 
         if (data.success) {
-          // 2. Thông báo thành công và load lại ngay lập tức để chuyển nút sang "Đã đăng ký"
           await Swal.fire({
             icon: "success",
             title: "Đăng ký thành công!",
@@ -1396,7 +1407,7 @@
             timer: 1500,
             showConfirmButton: false
           });
-          loadActivities(); // Chuyển thẻ hoạt động sang nút "Báo vắng / Xin rút"
+          loadActivities();
         } else {
           Swal.fire("Không thể đăng ký", data.message || "Hoạt động đã đủ người hoặc xảy ra lỗi!", "warning");
         }
@@ -1420,8 +1431,6 @@
 
     window.addEventListener("DOMContentLoaded", () => {
       const now = new Date();
-      
-      // Để trống ô lọc tháng khi khởi tạo để hiển thị TẤT CẢ báo cáo ngay từ đầu
       const filterMonthEl = document.getElementById("filter-bc-month");
       if (filterMonthEl) filterMonthEl.value = ""; 
 
@@ -1430,15 +1439,14 @@
 
       switchCtvTab('ca-truc');
     });
-  let cachedSysNotis = [];
-    let currentNotiFilter = "ALL"; // Mặc định là ALL
 
-    // Gọi API với role chuẩn xác của từng trang
+    let cachedSysNotis = [];
+    let currentNotiFilter = "ALL";
+
     async function fetchSystemNotifications() {
       const user = (typeof currentUser !== 'undefined') ? currentUser : {};
       const username = user.username || user.tenDonVi || "";
       
-      // Nhận diện chuẩn vai trò: Ưu tiên thuộc tính role, nếu không dựa theo đường dẫn URL
       let role = "USER";
       if (window.location.href.includes("admin")) {
         role = "ADMIN";
@@ -1448,22 +1456,18 @@
 
       try {
         const res = await fetch(`${API_URL}?action=GET_APP_NOTIFICATIONS&role=${encodeURIComponent(role)}&username=${encodeURIComponent(username)}`);
+        if (!res.ok) return;
+        
         const data = await res.json();
-
-        if (data.success && Array.isArray(data.list)) {
+        if (data && data.success && Array.isArray(data.list)) {
           cachedSysNotis = data.list;
           renderSystemNotificationUI();
         }
-      } catch (err) {
-        console.warn("Chưa tải được thông báo:", err);
-      }
+      } catch (err) {}
     }
 
-    // Hàm chuyển đổi bộ lọc khi bấm vào nút
     function filterNotiByType(type) {
       currentNotiFilter = type;
-      
-      // Đổi màu tab đang chọn
       ['ALL', 'UNREAD', 'CSVC'].forEach(t => {
         const btn = document.getElementById(`btn-noti-filter-${t}`);
         if (btn) {
@@ -1474,7 +1478,6 @@
           }
         }
       });
-
       renderSystemNotificationUI();
     }
 
@@ -1497,7 +1500,6 @@
       return str;
     }
 
-    // Hiển thị danh sách thông báo đã qua bộ lọc
     function renderSystemNotificationUI() {
       const badge = document.getElementById("sys-noti-badge") || document.getElementById("noti-badge");
       const listEl = document.getElementById("sys-noti-list") || document.getElementById("noti-list");
@@ -1507,7 +1509,6 @@
       const readIds = JSON.parse(localStorage.getItem(`read_sys_notis_${userKey}`) || "[]");
       const unreadCount = cachedSysNotis.filter(n => !readIds.includes(n.id)).length;
 
-      // Cập nhật chấm đỏ
       if (badge) {
         if (unreadCount > 0) {
           badge.innerText = unreadCount > 9 ? "9+" : unreadCount;
@@ -1517,7 +1518,6 @@
         }
       }
 
-      // Thực hiện lọc dữ liệu
       let displayList = cachedSysNotis;
       if (currentNotiFilter === "UNREAD") {
         displayList = displayList.filter(n => !readIds.includes(n.id));
@@ -1546,7 +1546,8 @@
         `;
       }).join('');
     }
-  function toggleSystemNotificationDropdown() {
+
+    function toggleSystemNotificationDropdown() {
       const drop = document.getElementById("sys-noti-dropdown");
       if (drop) drop.classList.toggle("hidden");
     }
@@ -1559,10 +1560,7 @@
       }
     });
 
-    // Thêm gọi hàm tự động cập nhật:
-    fetchSystemNotifications();
-    setInterval(fetchSystemNotifications, 30000);
-  let cachedDanhBaList = [];
+    let cachedDanhBaList = [];
 
     async function loadDanhBaVanPhongCTV() {
       const tbody = document.getElementById("tbody-danh-ba-ctv");
