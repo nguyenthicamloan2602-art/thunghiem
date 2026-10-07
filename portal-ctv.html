@@ -924,9 +924,8 @@
           <tr class="hover:bg-slate-50 transition">
             <td class="p-3 font-semibold text-slate-900">${o.tenChuongTrinh}</td>
             <td class="p-3">
-              <b class="text-slate-800 block">${o.nguoiDaiDien || o.nguoiMuon}</b>
-              <span class="text-slate-500 text-[11px] block">Lớp: ${o.lop || '---'} • SĐT: ${o.sdt}</span>
-              ${o.nguoiBanGiao ? `<span class="text-emerald-700 text-[10.5px] block font-medium">Bàn giao: ${o.nguoiBanGiao}</span>` : ''}
+              <b class="text-sky-800 block text-xs font-bold">${o.tenDonVi || 'Đội Cộng tác viên Văn phòng'}</b>
+              <span class="text-slate-500 text-[11px] block mt-0.5">Người mượn: <b class="text-slate-700">${o.nguoiDaiDien || o.nguoiMuon || '---'}</b> (Lớp: ${o.lop || '---'} • SĐT: ${o.sdt || '---'})</span>
             </td>
             <td class="p-3 text-[11px] leading-relaxed">
               <div>Từ: ${o.thoiGianMuon}</div>
