@@ -1396,32 +1396,28 @@
       let rYear, rMonth;
       if (val.includes("-")) {
         [rYear, rMonth] = val.split("-").map(Number);
+      } else if (val.includes("/")) {
+        [rMonth, rYear] = val.split("/").map(Number);
       } else {
         const d = new Date(val);
         rYear = d.getFullYear();
         rMonth = d.getMonth() + 1;
       }
       
-      let dMonth = rMonth + 1;
-      let dYear = rYear;
-      if (dMonth > 12) {
-        dMonth = 1;
-        dYear += 1;
-      }
-      
-      // Hạn chót: 17:00 ngày 20 của tháng kế tiếp
-      const deadlineDate = new Date(dYear, dMonth - 1, 20, 17, 0, 0);
+      // LOGIC CHUẨN: Hạn chót là 17:00 ngày 20 của CHÍNH THÁNG ĐÓ
+      const deadlineDate = new Date(rYear, rMonth - 1, 20, 17, 0, 0);
       const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
 
       if (now > deadlineDate) {
         isCurrentReportLate = true;
         warningBanner.classList.remove("hidden");
-        statusPill.innerText = `Đã quá hạn (Hạn: 17:00 ngày 20/${String(dMonth).padStart(2,'0')}/${dYear})`;
+        statusPill.innerText = `Đã quá hạn (Hạn chót: 17:00 ngày 20/${pad(rMonth)}/${rYear})`;
         statusPill.className = "font-bold text-rose-600";
       } else {
         isCurrentReportLate = false;
         warningBanner.classList.add("hidden");
-        statusPill.innerText = `Trong hạn (Hạn chót: 17:00 ngày 20/${String(dMonth).padStart(2,'0')}/${dYear})`;
+        statusPill.innerText = `Trong hạn (Hạn chót: 17:00 ngày 20/${pad(rMonth)}/${rYear})`;
         statusPill.className = "font-bold text-emerald-600";
       }
     }
