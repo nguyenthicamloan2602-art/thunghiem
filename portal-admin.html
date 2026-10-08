@@ -2611,6 +2611,25 @@
       localStorage.setItem("read_sys_notis_admin", JSON.stringify(allIds));
       renderSystemNotificationUI();
     }
+  
+    // Gắn trực tiếp vào window để tránh hoàn toàn lỗi "is not defined"
+  window.toggleBangDanhSachCTV = function(maHD) {
+    const box = document.getElementById("table-wrap-ctv-" + maHD);
+    const icon = document.getElementById("icon-chevron-" + maHD);
+    const btn = document.getElementById("btn-toggle-ctv-" + maHD);
+    if (!box) return;
+
+    const isHidden = box.classList.contains("hidden");
+    if (isHidden) {
+      box.classList.remove("hidden");
+      if (icon) icon.style.transform = "rotate(180deg)";
+      if (btn) btn.classList.add("bg-sky-100", "border-sky-300");
+    } else {
+      box.classList.add("hidden");
+      if (icon) icon.style.transform = "rotate(0deg)";
+      if (btn) btn.classList.remove("bg-sky-100", "border-sky-300");
+    }
+  };
   </script>
 </body>
 </html>
