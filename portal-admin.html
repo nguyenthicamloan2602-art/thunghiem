@@ -1814,7 +1814,7 @@
 
     async function loadHoatDongCTVAdmin() {
       const container = document.getElementById("container-hoat-dong-list");
-      container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tải dữ liệu hoạt động...</p>`;
+      container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tải danh sách hoạt động...</p>`;
 
       try {
         const res = await fetch(`${API_URL}?action=GET_DANH_SACH_HOAT_DONG_CTV`);
@@ -1824,8 +1824,8 @@
           container.innerHTML = data.hoatDongs.map(hd => {
             const isClosed = hd.trangThai === "CLOSED" || hd.trangThai === "CLOSED_FULL";
             return `
-              <div class="border border-slate-200 rounded-3xl p-4 sm:p-5 bg-white shadow-xs space-y-3 transition hover:border-sky-200">
-                <!-- KHỐI HEADER THÔNG TIN HOẠT ĐỘNG -->
+              <div class="border border-slate-200 rounded-3xl p-4 sm:p-5 bg-white shadow-xs space-y-3 transition hover:border-sky-300">
+                <!-- KHỐI HEADER THÔNG TIN CHÍNH (GỌN GÀNG) -->
                 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100">
                   <div class="space-y-1">
                     <div class="flex items-center gap-2 flex-wrap">
@@ -1869,7 +1869,7 @@
                   </div>
                 </div>
 
-                <!-- BẢNG DANH SÁCH CTV (MẶC ĐỊNH ẨN, CHỈ MỞ KHI BẤM XEM) -->
+                <!-- BẢNG DANH SÁCH CTV (MẶC ĐỊNH BỊ ẨN, CHỈ MỞ KHI BẤM NÚT TRÊN) -->
                 <div id="table-wrap-ctv-${hd.maHD}" class="hidden pt-1 space-y-2">
                   <div class="overflow-x-auto border border-slate-100 rounded-2xl">
                     <table class="w-full text-left text-xs">
@@ -1940,6 +1940,25 @@
         }
       } catch (e) {
         container.innerHTML = `<p class="text-xs text-rose-500 text-center py-6">Lỗi tải danh sách hoạt động!</p>`;
+      }
+    }
+
+    // HÀM ĐÓNG / MỞ BẢNG DANH SÁCH CTV KHI BẤM NÚT
+    function toggleBangDanhSachCTV(maHD) {
+      const box = document.getElementById(`table-wrap-ctv-${maHD}`);
+      const icon = document.getElementById(`icon-chevron-${maHD}`);
+      const btn = document.getElementById(`btn-toggle-ctv-${maHD}`);
+      if (!box) return;
+
+      const isHidden = box.classList.contains("hidden");
+      if (isHidden) {
+        box.classList.remove("hidden");
+        if (icon) icon.style.transform = "rotate(180deg)";
+        if (btn) btn.classList.add("bg-sky-100", "border-sky-300");
+      } else {
+        box.classList.add("hidden");
+        if (icon) icon.style.transform = "rotate(0deg)";
+        if (btn) btn.classList.remove("bg-sky-100", "border-sky-300");
       }
     }
 
