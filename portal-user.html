@@ -1659,11 +1659,12 @@
           title: `<span class="text-sm font-black text-slate-800 uppercase">🏢 CHI TIẾT CƠ SỞ VẬT CHẤT</span>`,
           html: `
             <div class="text-left text-xs space-y-2 p-2 text-slate-700">
+              <p><b>Đơn vị sử dụng:</b> <span class="text-sky-700 font-bold">${props.tenDonVi || 'Đội Cộng tác viên Văn phòng'}</span></p>
               <p><b>Địa điểm:</b> ${props.tenDiaDiem}</p>
               <p><b>Người phụ trách:</b> ${props.nguoiPhuTrach}</p>
               <p><b>Thời gian:</b> Từ ${props.thoiGianBatDau} đến ${props.thoiGianKetThuc}</p>
               <p><b>Nội dung:</b> ${props.noiDung}</p>
-              <p><b>Trạng thái:</b> <span class="text-emerald-600 font-bold">Đăng ký thành công, chờ CV được duyệt</span></p>
+              <p><b>Trạng thái:</b> <span class="text-emerald-600 font-bold">${props.trangThai || 'Đã duyệt chính thức'}</span></p>
             </div>
           `,
           confirmButtonText: "Đóng",
