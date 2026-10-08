@@ -1824,25 +1824,27 @@
           container.innerHTML = data.hoatDongs.map(hd => {
             const isClosed = hd.trangThai === "CLOSED" || hd.trangThai === "CLOSED_FULL";
             return `
-              <div class="border border-slate-200 rounded-3xl p-5 bg-white shadow-xs space-y-3.5">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+              <div class="border border-slate-200 rounded-3xl p-4 sm:p-5 bg-white shadow-xs space-y-3 transition hover:border-sky-200">
+                <!-- KHỐI HEADER THÔNG TIN HOẠT ĐỘNG -->
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100">
                   <div class="space-y-1">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                       <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${hd.tieuChi === 'Bắt buộc' ? 'bg-rose-100 text-rose-700' : 'bg-sky-100 text-sky-700'}">
                         ${hd.tieuChi}
                       </span>
                       <b class="text-slate-900 text-sm">${hd.tenHoatDong}</b>
                       <span class="text-[10px] text-slate-400 font-mono">(${hd.maHD})</span>
                     </div>
-                    <div class="text-[11px] text-slate-500 space-y-0.5 pt-1">
+                    <div class="text-[11px] text-slate-500 space-y-0.5 pt-0.5">
                       <p>⏰ <b>Thời gian:</b> ${hd.thoiGian}</p>
                       <p>📍 <b>Địa điểm:</b> ${hd.diaDiem} • 👔 <b>Trang phục:</b> ${hd.trangPhuc}</p>
                       <p class="text-emerald-700">🎁 <b>Quyền lợi:</b> ${(hd.quyenLoi || "").replace(/\n/g, ", ")}</p>
                     </div>
                   </div>
 
+                  <!-- CÁC NÚT THAO TÁC BÊN PHẢI -->
                   <div class="flex sm:flex-col items-end gap-2 shrink-0">
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-1.5 flex-wrap">
                       <span class="text-xs font-black px-2.5 py-1 rounded-xl ${isClosed ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-800'}">
                         ${isClosed ? 'Đã đóng đơn' : 'Đang mở nhận đơn'}
                       </span>
@@ -1851,71 +1853,84 @@
                         ${isClosed ? '<i class="fa-solid fa-lock-open mr-1"></i> Mở lại' : '<i class="fa-solid fa-lock mr-1"></i> Đóng đơn'}
                       </button>
                     </div>
-                    <span class="text-xs font-bold text-slate-600 mt-1">
-                      Sĩ số đã tuyển: <b>${hd.soLuongDaDK} / ${hd.soLuongCanTuyen}</b> CTV
-                    </span>
+                    
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="text-xs font-bold text-slate-600">
+                        Sĩ số: <b class="text-sky-700">${hd.soLuongDaDK} / ${hd.soLuongCanTuyen}</b> CTV
+                      </span>
+                      <!-- NÚT BẬT / TẮT DANH SÁCH CTV -->
+                      <button onclick="toggleBangDanhSachCTV('${hd.maHD}')" id="btn-toggle-ctv-${hd.maHD}" 
+                              class="px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-users text-[11px]"></i>
+                        <span>Xem danh sách (${hd.soLuongDaDK})</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] ml-0.5 transition-transform duration-200" id="icon-chevron-${hd.maHD}"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                  <table class="w-full text-left text-xs border border-slate-100 rounded-xl overflow-hidden">
-                    <thead class="bg-slate-50/80 text-slate-600 font-bold border-b">
-                      <tr>
-                        <th class="p-2.5 w-12 text-center">STT</th>
-                        <th class="p-2.5">MSSV</th>
-                        <th class="p-2.5">Họ và Tên</th>
-                        <th class="p-2.5">Lớp</th>
-                        <th class="p-2.5">Vị trí</th>
-                        <th class="p-2.5 text-center">Trạng thái tham gia</th>
-                        <th class="p-2.5 text-center">Điểm danh</th>
-                        <th class="p-2.5 text-center w-28">Thao tác QTV</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
-                      ${hd.danhSachCTV && hd.danhSachCTV.length > 0 ? hd.danhSachCTV.map((c, i) => {
-                        const isChoHuy = c.trangThaiDK === "CHO_HUY";
-                        return `
-                          <tr class="hover:bg-slate-50/60 transition">
-                            <td class="p-2.5 text-center font-bold text-slate-400">${i + 1}</td>
-                            <td class="p-2.5 font-mono font-bold text-slate-800">${c.mssv}</td>
-                            <td class="p-2.5 font-semibold text-slate-800">${c.hoTen}</td>
-                            <td class="p-2.5">${c.lop}</td>
-                            <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-sky-50 text-sky-700 font-bold">${c.viTri || 'Thành viên'}</span></td>
-                            
-                            <td class="p-2.5 text-center">
-                              ${isChoHuy ? `
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200 animate-pulse">
-                                  ⚠️ Xin rút (Chờ duyệt)
-                                </span>
-                              ` : `
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                  Đã đăng ký
-                                </span>
-                              `}
-                            </td>
+                <!-- BẢNG DANH SÁCH CTV (MẶC ĐỊNH ẨN, CHỈ MỞ KHI BẤM XEM) -->
+                <div id="table-wrap-ctv-${hd.maHD}" class="hidden pt-1 space-y-2">
+                  <div class="overflow-x-auto border border-slate-100 rounded-2xl">
+                    <table class="w-full text-left text-xs">
+                      <thead class="bg-slate-50/80 text-slate-600 font-bold border-b">
+                        <tr>
+                          <th class="p-2.5 w-12 text-center">STT</th>
+                          <th class="p-2.5">MSSV</th>
+                          <th class="p-2.5">Họ và Tên</th>
+                          <th class="p-2.5">Lớp</th>
+                          <th class="p-2.5">Vị trí</th>
+                          <th class="p-2.5 text-center">Trạng thái tham gia</th>
+                          <th class="p-2.5 text-center">Điểm danh</th>
+                          <th class="p-2.5 text-center w-28">Thao tác QTV</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-slate-100 bg-white">
+                        ${hd.danhSachCTV && hd.danhSachCTV.length > 0 ? hd.danhSachCTV.map((c, i) => {
+                          const isChoHuy = c.trangThaiDK === "CHO_HUY";
+                          return `
+                            <tr class="hover:bg-slate-50/60 transition">
+                              <td class="p-2.5 text-center font-bold text-slate-400">${i + 1}</td>
+                              <td class="p-2.5 font-mono font-bold text-slate-800">${c.mssv}</td>
+                              <td class="p-2.5 font-semibold text-slate-800">${c.hoTen}</td>
+                              <td class="p-2.5">${c.lop || '---'}</td>
+                              <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-sky-50 text-sky-700 font-bold">${c.viTri || 'Thành viên'}</span></td>
+                              
+                              <td class="p-2.5 text-center">
+                                ${isChoHuy ? `
+                                  <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200 animate-pulse">
+                                    ⚠️ Xin rút (Chờ duyệt)
+                                  </span>
+                                ` : `
+                                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                    Đã đăng ký
+                                  </span>
+                                `}
+                              </td>
 
-                            <td class="p-2.5 text-center">
-                              <input type="checkbox" ${c.diemDanh ? 'checked' : ''} onchange="xuLyDiemDanhAdmin('${c.id}', '${hd.maHD}', '${c.mssv}', this.checked)" class="w-4 h-4 rounded text-sky-600 cursor-pointer" ${isChoHuy ? 'disabled' : ''}>
-                            </td>
+                              <td class="p-2.5 text-center">
+                                <input type="checkbox" ${c.diemDanh ? 'checked' : ''} onchange="xuLyDiemDanhAdmin('${c.id}', '${hd.maHD}', '${c.mssv}', this.checked)" class="w-4 h-4 rounded text-sky-600 cursor-pointer" ${isChoHuy ? 'disabled' : ''}>
+                              </td>
 
-                            <td class="p-2.5 text-center">
-                              ${isChoHuy ? `
-                                <button onclick="xemLyDoVaDuyetHuy('${hd.maHD}', '${c.mssv}', '${c.hoTen}', \`${c.lyDoHuy || 'Bận việc đột xuất'}\`)" 
-                                        class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-[10.5px] shadow-xs">
-                                  Xem lý do
-                                </button>
-                              ` : `
-                                <button onclick="qtvXoaNhanhCTV('${hd.maHD}', '${c.mssv}', '${c.hoTen}')" 
-                                        class="px-2 py-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded font-medium text-[10.5px]">
-                                  Xóa khỏi HĐ
-                                </button>
-                              `}
-                            </td>
-                          </tr>
-                        `;
-                      }).join('') : `<tr><td colspan="8" class="text-center py-4 text-slate-400 italic">Chưa có CTV nào đăng ký hoạt động này.</td></tr>`}
-                    </tbody>
-                  </table>
+                              <td class="p-2.5 text-center">
+                                ${isChoHuy ? `
+                                  <button onclick="xemLyDoVaDuyetHuy('${hd.maHD}', '${c.mssv}', '${c.hoTen}', \`${c.lyDoHuy || 'Bận việc đột xuất'}\`)" 
+                                          class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-[10.5px] shadow-xs">
+                                    Xem lý do
+                                  </button>
+                                ` : `
+                                  <button onclick="qtvXoaNhanhCTV('${hd.maHD}', '${c.mssv}', '${c.hoTen}')" 
+                                          class="px-2 py-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded font-medium text-[10.5px]">
+                                    Xóa khỏi HĐ
+                                  </button>
+                                `}
+                              </td>
+                            </tr>
+                          `;
+                        }).join('') : `<tr><td colspan="8" class="text-center py-4 text-slate-400 italic">Chưa có CTV nào đăng ký hoạt động này.</td></tr>`}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             `;
